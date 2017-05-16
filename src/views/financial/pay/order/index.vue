@@ -48,13 +48,13 @@
 
       <el-table-column align="center" label="支付方式" width="65">
         <template scope="scope">
-          <span>{{scope.row.payType}}</span>
+          <span>{{scope.row.payTypeStr}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="回调商户状态" width="65">
         <template scope="scope">
-          <span>{{scope.row.callbackState}}</span>
+          <span>{{scope.row.callbackStateStr}}</span>
         </template>
       </el-table-column>
 
