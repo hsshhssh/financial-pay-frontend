@@ -8,7 +8,7 @@ export function orderList() {
   params.append('search', JSON.stringify(search));
 
   return fetch({
-  	baseURL: 'http://localhost:8080',
+  	baseURL: 'http://139.196.51.152:8080',
     url: '/xqh/financial/pay/order/list',
     method: 'post',
     data: params,

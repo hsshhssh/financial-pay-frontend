@@ -1,6 +1,31 @@
 <template>
   <div class="app-container calendar-list-container">
 
+    <!-- 搜索区域 -->
+    <!-- <div class="filter-container">
+      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
+      </el-input>
+
+      <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.importance" placeholder="重要性">
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item">
+        </el-option>
+      </el-select>
+
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.type" placeholder="类型">
+        <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key">
+        </el-option>
+      </el-select>
+
+      <el-select @change='handleFilter' style="width: 120px" class="filter-item" v-model="listQuery.sort" placeholder="排序">
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key">
+        </el-option>
+      </el-select>
+
+      <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="edit">添加</el-button>
+      <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
+      <el-checkbox class="filter-item" @change='tableKey=tableKey+1'  v-model="showAuditor">显示审核人</el-checkbox>
+    </div> -->
     <!-- 列表 -->
     <el-table  :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
 
