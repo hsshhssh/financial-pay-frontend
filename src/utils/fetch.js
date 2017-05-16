@@ -51,11 +51,7 @@ export default function _fetch(options) {
 export function fetch(options) {
   return new Promise((resolve, reject) => {
     const instance = axios.create({
-      baseURL: process.env.BASE_API,
-      headers: { 'Access-Control-ALlow-Origin': '*' },
-      headers: { 'Access-Control-ALlow-Credentials': 'ture' },
-      headers: { 'Access-Control-ALlow-Methods': '*' },
-      timeout: 2000 // 超时
+      timeout: 10000 // 超时
     });
     instance(options)
             .then(response => {
