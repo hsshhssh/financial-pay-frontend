@@ -2,30 +2,49 @@
   <div class="app-container calendar-list-container">
 
     <!-- 搜索区域 -->
-    <!-- <div class="filter-container">
-      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
+    <div class="filter-container">
+      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="订单id" v-model="listQuery.search.id_eq">
       </el-input>
 
-      <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.importance" placeholder="重要性">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item">
+      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="订单流水号" v-model="listQuery.search.orderSerial_eq">
+      </el-input>
+
+      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="用户Id" v-model="listQuery.search.userId_eq">
+      </el-input>
+
+      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="appId" v-model="listQuery.search.appId_eq">
+      </el-input>
+
+      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="支付平台Id" v-model="listQuery.search.platformId_eq">
+      </el-input>
+
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.payType_eq" placeholder="支付方式">
+        <el-option v-for="item in payTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
         </el-option>
       </el-select>
 
-      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.type" placeholder="类型">
-        <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key">
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.callbackState_eq" placeholder="回调商户状态">
+        <el-option v-for="item in callbackStateOptions" :key="item.key" :label="item.display_name" :value="item.key">
+        </el-option>
+      </el-select>
+      <br/>
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.timeType" placeholder="时间类型">
+        <el-option v-for="item in timeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
         </el-option>
       </el-select>
 
-      <el-select @change='handleFilter' style="width: 120px" class="filter-item" v-model="listQuery.sort" placeholder="排序">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key">
-        </el-option>
-      </el-select>
+      <el-date-picker clearable class="filter-item" v-model="listTimeRange" type="datetimerange" :picker-options="pickerOptions2" placeholder="时间段" align="right">
+      </el-date-picker>
 
+
+    </div>
+    
+
+    <div class="filter-container">
       <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="edit">添加</el-button>
       <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
-      <el-checkbox class="filter-item" @change='tableKey=tableKey+1'  v-model="showAuditor">显示审核人</el-checkbox>
-    </div> -->
+    </div>
+
     <!-- 列表 -->
     <el-table  :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
 
@@ -47,7 +66,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="用户id" width="65">
+      <el-table-column align="center" label="用户Id" width="65">
         <template scope="scope">
           <span>{{scope.row.userId}}</span>
         </template>
@@ -65,7 +84,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="支付平台id" width="65">
+      <el-table-column align="center" label="支付平台Id" width="65">
         <template scope="scope">
           <span>{{scope.row.platformId}}</span>
         </template>
@@ -83,7 +102,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="商户订单号" width="150">
+      <el-table-column align="center" label="支付平台订单号" width="150">
         <template scope="scope">
           <span>{{scope.row.platformOrderNo}}</span>
         </template>
@@ -118,9 +137,6 @@
           <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
-
-      
-
     </el-table>
 
     <!-- 分页信息 -->
@@ -130,7 +146,6 @@
       </el-pagination>
     </div>
 
-
   </div>
 </template>
 
@@ -138,20 +153,60 @@
     import { fetchList, fetchPv } from 'api/article_table';
     import { parseTime, objectMerge } from 'utils';
 
+    import {deleteEmptyProperty} from 'utils/filter'
     import { orderList } from 'api/financial/pay_order'
 
-    const calendarTypeOptions = [
-      { key: 'FD', display_name: '经济数据' },
-      { key: 'FE', display_name: '财经大事' },
-      { key: 'BI', display_name: '国债发行' },
-      { key: 'VN', display_name: '假期报告' }
-    ];
+    const payTypeOptions = [
+      { key: 1, display_name: '微信wap支付' }
+    ]
 
-    // arr to obj
-    const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-      acc[cur.key] = cur.display_name;
-      return acc
-    }, {});
+    const callbackStateOptions = [
+      { key: 1, display_name: '成功' },
+      { key: 2, display_name: '失败' }
+    ]
+
+    const timeTypeOptions = [
+      { key: 'createTime', display_name: '创建时间' },
+      { key: 'updateTime', display_name: '修改时间' },
+      { key: 'callbackSuccessTime', display_name: '回调成功时间' },
+      { key: 'callbackFailTime', display_name: '回调失败时间' },
+    ]
+
+    const pickerOptions2 = {
+          shortcuts: [{
+            text: '最近一天',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+              picker.$emit('pick', [start, end]);
+            }
+          },{
+            text: '最近三天',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
+              picker.$emit('pick', [start, end]);
+            }
+          },{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          },{
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        }
 
     export default {
       name: 'table_demo',
@@ -162,11 +217,12 @@
           listLoading: true,
           listQuery: {
             page: 1,
-            limit: 20,
-            importance: undefined,
-            title: undefined,
-            type: undefined,
-            sort: '+id'
+            limit: 10,
+            timeType: undefined,
+            search: {
+              payType_eq: undefined,
+              callbackState_eq: undefined
+            }
           },
           temp: {
             id: undefined,
@@ -178,7 +234,11 @@
             status: 'published'
           },
           importanceOptions: [1, 2, 3],
-          calendarTypeOptions,
+          payTypeOptions,
+          callbackStateOptions,
+          pickerOptions2,
+          timeTypeOptions,
+          listTimeRange: [],
           sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
           statusOptions: ['published', 'draft', 'deleted'],
           dialogFormVisible: false,
@@ -212,14 +272,21 @@
       methods: {
         getList() {
           this.listLoading = true;
-          // fetchList(this.listQuery).then(response => {
-          //   this.list = response.items;
-          //   this.total = response.total;
-          //   this.listLoading = false;
 
-          //   console.log(response);
-          // })
-          orderList().then(response => {
+          let page = this.listQuery.page;
+          let size = this.listQuery.limit;
+          let search = this.listQuery.search;
+
+          delete search.createTime_lte, delete search.createTime_gte; 
+          delete search.updateTime_lte, delete search.updateTime_gte; 
+          delete search.callbackSuccessTime_lte, delete search.callbackSuccessTime_gte; 
+          delete search.callbackFailTime_lte, delete search.callbackFailTime_gte;
+          if(typeof(this.listQuery.timeType) != 'undefined' && this.listQuery.timeType != '') {
+            search[this.listQuery.timeType + '_gte'] = Date.parse(this.listTimeRange[0])/1000;
+            search[this.listQuery.timeType + '_lte'] = Date.parse(this.listTimeRange[1])/1000;
+          } 
+
+          orderList(search, page, size).then(response => {
             this.list = response.list;
             this.total = response.total;
             this.listLoading = false;
@@ -322,10 +389,10 @@
         handleDownload() {
           require.ensure([], () => {
             const { export_json_to_excel } = require('vendor/Export2Excel');
-            const tHeader = ['时间', '地区', '类型', '标题', '重要性'];
-            const filterVal = ['timestamp', 'province', 'type', 'title', 'importance'];
+            const tHeader = ['序号', '订单号', '订单流水号', '用户Id', 'appId', '订单金额', '支付平台Id', '支付方式', '回调商户状态', '支付平台订单号', '手续费比例', '回调成功时间', '回调商户状态', '创建时间', '修改时间'];
+            const filterVal = ['id', 'orderNo', 'orderSerial', 'userId', 'appId', 'money', 'platformId', 'payTypeStr', 'callbackStateStr', 'platformOrderNo', 'interestRate', 'callbackSuccessTime', 'callbackFailTime', 'createTime', 'updateTime'];
             const data = this.formatJson(filterVal, this.list);
-            export_json_to_excel(tHeader, data, 'table数据');
+            export_json_to_excel(tHeader, data, '订单数据');   
           })
         },
         formatJson(filterVal, jsonData) {

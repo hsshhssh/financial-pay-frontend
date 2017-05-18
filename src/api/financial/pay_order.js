@@ -1,14 +1,18 @@
 import { fetch } from 'utils/fetch';
+import {deleteEmptyProperty} from 'utils/filter';
+import {deepCoyp} from 'utils/copy';
 
-export function orderList() {
-  
-  let search = {id_gt: 1};
-
+export function orderList(search, page, size) {
+  // console.log(search)
+  let searchCopy = deepCoyp(search)
+  deleteEmptyProperty(searchCopy)
+  console.log(search)
   let params = new FormData();
-  params.append('search', JSON.stringify(search));
+  params.append('search', JSON.stringify(searchCopy));
+  params.append('page', page);
+  params.append('size', size);
 
   return fetch({
-  	baseURL: 'http://139.196.51.152:8080',
     url: '/xqh/financial/pay/order/list',
     method: 'post',
     data: params,
