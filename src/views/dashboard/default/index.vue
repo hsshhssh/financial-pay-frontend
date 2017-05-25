@@ -1,10 +1,10 @@
 <template>
     <div class="dashboard-editor-container">
         <div class=" clearfix">
-            <PanThumb style="float: left" :image="avatar"> 你的权限:
-                <span class="pan-info-roles" v-for="item in roles">{{item}}</span>
+            <PanThumb style="float: left" :image="avatar"> {{name}}
+                <!-- <span class="pan-info-roles" v-for="item in roles">{{item}}</span> -->
             </PanThumb>
-            <a href="https://github.com/PanJiaChen/vue-element-admin" target="_blank" class="github-corner" aria-label="View source on Github">
+            <a href="#" class="github-corner" aria-label="View source on Github">
                 <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#4AB7BD; color:#fff; position: absolute; top: 50px; border: 0; right: 0;"
                 aria-hidden="true">
                 <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
@@ -15,7 +15,12 @@
             </a>
             <div class="info-container">
                 <span class="display_name">{{name}}</span>
-                <span style='font-size:20px;padding-top:20px;display:inline-block;'>普通编辑dashboard</span>
+                <span style='font-size:20px;padding-top:20px;display:inline-block;'>昨日结算金额:</span>
+                <countTo style='font-size:20px;padding-top:20px;padding-right:100px;display:inline-block;' :startVal='0' :endVal='yesterdaySettlement' :duration='3400'></countTo>
+                <span style='font-size:20px;padding-top:20px;display:inline-block;'>昨日订单数:</span>
+                <countTo style='font-size:20px;padding-top:20px;padding-right:100px;display:inline-block;' :startVal='0' :endVal='yesterdayOrder' :duration='3400'></countTo>
+                <span style='font-size:20px;padding-top:20px;display:inline-block;'>今日订单数:</span>
+                <countTo style='font-size:20px;padding-top:20px;padding-right:100px;display:inline-block;' :startVal='0' :endVal='todayOrder' :duration='3400'></countTo>
             </div>
         </div>
         <div>
@@ -27,12 +32,19 @@
 <script>
     import { mapGetters } from 'vuex';
     import PanThumb from 'components/PanThumb';
+    import countTo from 'vue-count-to';
+    import { getPayData } from 'api/login'
+    import store from 'store';
+    
     export default {
       name: 'dashboard-default',
-      components: { PanThumb },
+      components: { PanThumb, countTo },
       data() {
         return {
-          emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
+          emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3',
+          yesterdaySettlement: 2000,
+          yesterdayOrder: 100,
+          todayOrder: 10
         }
       },
       computed: {
@@ -44,7 +56,21 @@
           'introduction',
           'roles'
         ])
-      }
+      },
+      methods: {
+        getData() {
+          getPayData(store.getters.uid).then(response => {
+            let res = response.data;
+            console.log(res);
+            this.yesterdaySettlement = res[0],
+            this.yesterdayOrder = res[1],
+            this.todayOrder = res[2]
+          })
+        }
+      },
+      created() {
+        this.getData();
+      },
     }
 </script>
 
@@ -79,4 +105,5 @@
             }
         }
     }
+
 </style>

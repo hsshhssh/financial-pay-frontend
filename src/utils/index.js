@@ -1,8 +1,6 @@
 /**
  * Created by jiachenpan on 16/11/18.
  */
- import showdown from 'showdown' // markdown转化
- const converter = new showdown.Converter();
 
  export function parseTime(time, cFormat) {
    if (arguments.length === 0) {
@@ -110,6 +108,11 @@
    })).join('&');
  }
 
+ export function param2Obj(url) {
+   const search = url.split('?')[1];
+   return JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
+ }
+
  export function html2Text(val) {
    const div = document.createElement('div');
    div.innerHTML = val;
@@ -209,6 +212,3 @@
    }
  }
 
- export function showdownMD(md) {
-   return converter.makeHtml(md)
- }

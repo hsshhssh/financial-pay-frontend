@@ -2,7 +2,7 @@ import fetch from 'utils/fetch';
 import {deleteEmptyProperty} from 'utils/filter';
 import {deepCoyp} from 'utils/copy';
 
-export function orderList(search, page, size) {
+export function settlementList(search, page, size) {
   // console.log(search)
   let searchCopy = deepCoyp(search)
   deleteEmptyProperty(searchCopy)
@@ -13,7 +13,7 @@ export function orderList(search, page, size) {
   params.append('size', size);
   
   return fetch({
-    url: '/xqh/financial/pay/order/list',
+    url: '/xqh/financial/settlement/app/list',
     method: 'post',
     data: params,
     headers:{'Content-Type':'application/x-www-form-urlencoded'}

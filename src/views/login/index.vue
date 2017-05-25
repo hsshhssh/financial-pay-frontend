@@ -3,11 +3,11 @@
         <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left"
                  label-width="0px"
                  class="card-box login-form">
-            <h3 class="title">系统登录</h3>
+            <h3 class="title">新起航支付平台</h3>
             <el-form-item prop="email">
                 <span class="svg-container"><wscn-icon-svg icon-class="jiedianyoujian"/></span>
                 <el-input name="email" type="text" v-model="loginForm.email" autoComplete="on"
-                          placeholder="邮箱"></el-input>
+                          placeholder="用户名"></el-input>
             </el-form-item>
             <el-form-item prop="password">
                 <span class="svg-container"><wscn-icon-svg icon-class="mima"/></span>
@@ -19,13 +19,13 @@
                     登录
                 </el-button>
             </el-form-item>
-            <div class='tips'>admin账号为:admin@wallstreetcn.com 密码随便填</div>
+            <!-- <div class='tips'>admin账号为:admin@wallstreetcn.com 密码随便填</div>
             <div class='tips'>editor账号:editor@wallstreetcn.com 密码随便填</div>
             <router-link to="/sendpwd" class="forget-pwd">
                 忘记密码?(或首次登录)
-            </router-link>
+            </router-link> -->
         </el-form>
-        <el-dialog title="第三方验证" v-model="showDialog">
+        <el-dialog title="第三方验证" :visible.sync="showDialog">
             邮箱登录成功,请选择第三方验证
             <socialSign></socialSign>
         </el-dialog>
@@ -58,15 +58,17 @@
         };
         return {
           loginForm: {
-            email: 'admin@wallstreetcn.com',
+            email: '',
             password: ''
           },
           loginRules: {
             email: [
-                { required: true, trigger: 'blur', validator: validateEmail }
+                // { required: true, trigger: 'blur', validator: validateEmail }
+                { required: true, trigger: 'blur', message: 'username is required'}
             ],
             password: [
-                { required: true, trigger: 'blur', validator: validatePass }
+                // { required: true, trigger: 'blur', validator: validatePass }
+                { required: true, trigger: 'blur'}
             ]
           },
           loading: false,
@@ -83,13 +85,13 @@
           this.$refs.loginForm.validate(valid => {
             if (valid) {
               this.loading = true;
-              this.$store.dispatch('LoginByEmail', this.loginForm).then(() => {
+              this.$store.dispatch('LoginByUserName', this.loginForm).then(() => {
                 this.loading = false;
                 this.$router.push({ path: '/' });
                 // this.showDialog = true;
               }).catch(err => {
-                this.$message.error(err);
                 this.loading = false;
+                this.$message.error(err);
               });
             } else {
               console.log('error submit!!');

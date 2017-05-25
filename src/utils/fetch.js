@@ -1,75 +1,59 @@
 import axios from 'axios';
 import { Message } from 'element-ui';
 import store from '../store';
-import router from '../router';
+// import router from '../router';
 
-export default function _fetch(options) {
-  return new Promise((resolve, reject) => {
-    const instance = axios.create({
-      baseURL: process.env.BASE_API,
-      // timeout: 2000,
-      headers: { 'X-Ivanka-Token': store.getters.token }
-    });
-    instance(options)
-            .then(response => {
-              const res = response.data;
-              if (res.code !== 20000) {
-                console.log(options); // for debug
-                Message({
-                  message: res.message,
-                  type: 'error',
-                  duration: 5 * 1000
-                });
-                // 50014:Token 过期了 50012:其他客户端登录了 50008:非法的token
-                if (res.code === 50008 || res.code === 50014 || res.code === 50012) {
-                  Message({
-                    message: res.message,
-                    type: 'error',
-                    duration: 5 * 1000
-                  });
-                  // 登出
-                  store.dispatch('FedLogOut').then(() => {
-                    router.push({ path: '/login' })
-                  });
-                }
-                reject(res);
-              }
-              resolve(res);
-            })
-            .catch(error => {
-              Message({
-                message: '发生异常错误,请刷新页面重试,或联系程序员',
-                type: 'error',
-                duration: 5 * 1000
-              });
-              console.log(error); // for debug
-              reject(error);
-            });
-  });
-}
+// 创建axios实例
+const service = axios.create({
+  baseURL: process.env.BASE_API, // api的base_url
+  timeout: 5000                  // 请求超时时间
+});
 
-export function fetch(options) {
-  return new Promise((resolve, reject) => {
-    const instance = axios.create({
-      baseURL: process.env.BASE_API,
-      headers: { 'Access-Control-ALlow-Origin': '*' },
-      headers: { 'Access-Control-ALlow-Credentials': 'ture' },
-      headers: { 'Access-Control-ALlow-Methods': '*' },
-      timeout: 10000 // 超时
+// request拦截器
+service.interceptors.request.use(config => {
+  // Do something before request is sent
+  if (store.getters.token) {
+    config.headers['X-Token'] = store.getters.token; // 让每个请求携带token--['X-Token']为自定义key 请根据实际情况自行修改
+  }
+  return config;
+}, error => {
+  // Do something with request error
+  console.log(error); // for debug
+  Promise.reject(error);
+})
+
+// respone拦截器
+service.interceptors.response.use(
+  response => response
+  /**
+  * 下面的注释为通过response自定义code来标示请求状态，当code返回如下情况为权限有问题，登出并返回到登录页
+  * 如通过xmlhttprequest 状态码标识 逻辑可写在下面error中
+  */
+  // const code = response.data.code;
+  // // 50014:Token 过期了 50012:其他客户端登录了 50008:非法的token
+  // if (code === 50008 || code === 50014 || code === 50012) {
+  //   Message({
+  //     message: res.message,
+  //     type: 'error',
+  //     duration: 5 * 1000
+  //   });
+  //   // 登出
+  //   store.dispatch('FedLogOut').then(() => {
+  //     router.push({ path: '/login' })
+  //   });
+  // } else {
+  //   return response
+  // }
+  ,
+  error => {
+    console.log('err' + error);// for debug
+    Message({
+      message: error.message,
+      type: 'error',
+      duration: 5 * 1000
     });
-    instance(options)
-            .then(response => {
-              const res = response.data;
-              resolve(res);
-            })
-            .catch(error => {
-              Message({
-                message: error,
-                type: 'error',
-                duration: 5 * 1000
-              });
-              console.log(error); // for debug
-              reject(error);
-            });
-  });
-}
+    return Promise.reject(error);
+  }
+)
+
+export default service;

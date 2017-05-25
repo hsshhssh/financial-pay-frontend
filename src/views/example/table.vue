@@ -91,12 +91,12 @@
     </el-table>
 
     <div v-show="!listLoading" class="pagination-container">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]"
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="listQuery.page" :page-sizes="[10,20,30, 50]"
         :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
 
-    <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form class="small-space" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
         <el-form-item label="类型">
           <el-select class="filter-item" v-model="temp.type" placeholder="请选择">
@@ -137,7 +137,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="阅读数统计" v-model="dialogPvVisible" size="small">
+    <el-dialog title="阅读数统计" :visible.sync="dialogPvVisible" size="small">
        <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
           <el-table-column prop="key" label="渠道"> </el-table-column>
           <el-table-column  prop="pv" label="pv"> </el-table-column>
@@ -152,7 +152,7 @@
 
 <script>
     import { fetchList, fetchPv } from 'api/article_table';
-    import { parseTime, objectMerge } from 'utils';
+    import { parseTime } from 'utils';
 
     const calendarTypeOptions = [
       { key: 'FD', display_name: '经济数据' },
@@ -227,8 +227,8 @@
         getList() {
           this.listLoading = true;
           fetchList(this.listQuery).then(response => {
-            this.list = response.items;
-            this.total = response.total;
+            this.list = response.data.items;
+            this.total = response.data.total;
             this.listLoading = false;
           })
         },
@@ -265,7 +265,7 @@
           this.dialogFormVisible = true;
         },
         handleUpdate(row) {
-          objectMerge(this.temp, row)
+          this.temp = Object.assign({}, row);
           this.dialogStatus = 'update';
           this.dialogFormVisible = true;
         },
@@ -296,7 +296,8 @@
           this.temp.timestamp = +this.temp.timestamp;
           for (const v of this.list) {
             if (v.id === this.temp.id) {
-              objectMerge(v, this.temp);
+              const index = this.list.indexOf(v);
+              this.list.splice(index, 1, this.temp);
               break;
             }
           }
@@ -321,8 +322,8 @@
         },
         handleFetchPv(pv) {
           fetchPv(pv).then(response => {
-            this.pvData = response.pvData
-            this.dialogPvVisible = true
+            this.pvData = response.data.pvData;
+            this.dialogPvVisible = true;
           })
         },
         handleDownload() {

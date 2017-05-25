@@ -3,15 +3,24 @@
 
 [English Document](https://github.com/PanJiaChen/vue-element-admin/blob/master/README-en.md)
 
+[wiki](https://github.com/PanJiaChen/vue-element-admin/wiki)
+
+**注意：该项目目前使用element-ui@1.3.3版本,所以最低兼容 Vue 2.3.0**
+
 ## 前言
-> 这半年来一直在用vue写管理后台，目前后台已经有七十多个页面，十几种权限，但维护成本依然很低，所以准备开源分享一下后台开发的经验和成果。目前的技术栈主要的采用vue+element+axios.由于是个人项目，所以数据请求都是用了mockjs代替。注意：在次项目基础上改造开发时请移除mock文件，不然所有请求都将会被代理掉！注意！
+> 这半年来一直在用vue写管理后台，目前后台已经有七十多个页面，十几种权限，但维护成本依然很低，所以准备开源分享一下后台开发的经验和成果。目前的技术栈主要的采用vue+element+axios.由于是个人项目，所以数据请求都是用了mockjs模拟。注意：在次项目基础上改造开发时请移除mock文件。
 
 后续会出一系列的教程配套文章，如如何从零构建后台项目框架，如何做完整的用户系统（如权限验证，二次登录等），如何二次开发组件（如富文本），如何整合七牛等等文章，各种后台开发经验等等。莫急~~
 
 相应需求，开了一个qq群 591724180 方便大家交流
 
- - [手摸手，带你用 vue 撸后台 系列一](https://juejin.im/post/59097cd7a22b9d0065fb61d2)
+ - [wiki](https://github.com/PanJiaChen/vue-element-admin/wiki)
+ - [手摸手，带你用 vue 撸后台 系列一(基础篇)](https://juejin.im/post/59097cd7a22b9d0065fb61d2)
+ - [手摸手，带你用 vue 撸后台 系列二(登录权限篇)](https://juejin.im/post/591aa14f570c35006961acac)
  - [ 手摸手，带你封装一个vue component](https://segmentfault.com/a/1190000009090836)
+
+
+ **如有问题请先看上述问题和Wiki,不能满足，欢迎issue和pr~**
 
 ## 功能
 - 登录/注销
@@ -48,8 +57,7 @@
 
     # 安装依赖
     npm install
-
-    # 建议不要用cnpm  安装有各种诡异的bug 可以通过如下操作解决npm速度慢的问题
+    //or # 建议不要用cnpm  安装有各种诡异的bug 可以通过如下操作解决npm速度慢的问题
     npm install --registry=https://registry.npm.taobao.org
 
     # 本地开发 开启服务
@@ -116,10 +124,14 @@
 
 ![enter image description here](https://github.com/PanJiaChen/vue-element-admin/blob/master/gifs/leftmenu.gif)
 
-#### 拖拽排序
+#### table拖拽排序
 
 ![enter image description here](https://github.com/PanJiaChen/vue-element-admin/blob/master/gifs/order.gif)
 
+
+#### 动态table
+
+![enter image description here](https://github.com/PanJiaChen/vue-element-admin/blob/master/gifs/dynamictable.gif)
 
 
 #### 上传裁剪头像
@@ -127,10 +139,10 @@
 ![enter image description here](https://github.com/PanJiaChen/vue-element-admin/blob/master/gifs/uploadAvatar.gif)
 
 
-
 #### 错误统计
 
 ![enter image description here](https://github.com/PanJiaChen/vue-element-admin/blob/master/gifs/errorlog.gif)
+
 
 #### 富文本(整合七牛 打水印等个性化功能)
 
@@ -144,6 +156,7 @@
 
 ![enter image description here](https://github.com/PanJiaChen/vue-element-admin/blob/master/gifs/echarts.gif)
 
+
 #### 导出excel
 
 ![enter image description here](https://github.com/PanJiaChen/vue-element-admin/blob/master/gifs/excel.png)
@@ -151,6 +164,3 @@
 
 ## [更多demo](http://panjiachen.github.io/vue-element-admin)
 
-
-###占坑
-一系列的配套文章即将来袭~

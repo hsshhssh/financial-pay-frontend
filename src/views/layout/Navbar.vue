@@ -14,9 +14,14 @@
                         首页
                     </el-dropdown-item>
                 </router-link>
-                <router-link  class='inlineBlock' to="/admin/profile">
+                <!-- <router-link  class='inlineBlock' to="/admin/profile">
                     <el-dropdown-item>
                         设置
+                    </el-dropdown-item>
+                </router-link> -->
+                <router-link  class='inlineBlock' to="/reset">
+                    <el-dropdown-item>
+                        重置密码
                     </el-dropdown-item>
                 </router-link>
                 <el-dropdown-item divided><span @click="logout" style="display:block;">退出登录</span></el-dropdown-item>
@@ -26,7 +31,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
+    import { mapGetters } from 'vuex';
     import Levelbar from './Levelbar';
     import Hamburger from 'components/Hamburger';
     import ErrLog from 'components/ErrLog';
@@ -56,7 +61,7 @@
         },
         logout() {
           this.$store.dispatch('LogOut').then(() => {
-            this.$router.push({ path: '/login' })
+            location.reload();// 为了重新实例化vue-router对象 避免bug
           });
         }
       }

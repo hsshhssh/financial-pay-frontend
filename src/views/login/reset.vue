@@ -9,13 +9,13 @@
                 </router-link>
                 <h3 class="title">重设密码</h3>
             </div>
-            <el-form-item prop="email">
-                <el-input name="email" type="text" v-model="resetForm.email"
-                          placeholder="邮箱"></el-input>
+            <el-form-item prop="userName">
+                <el-input name="userName" :type="text" :disabled="true" v-model="resetForm.userName"
+                          placeholder="用户名"></el-input>
             </el-form-item>
-            <el-form-item prop="code">
-                <el-input name="code" type="text" v-model="resetForm.code"
-                          placeholder="验证码"></el-input>
+            <el-form-item prop="passwordOld">
+                <el-input name="passwordOld" :type="passwordType" v-model="resetForm.passwordOld"
+                          placeholder="原密码"></el-input>
             </el-form-item>
             <el-form-item prop="password">
                 <el-input name="password" :type="passwordType" v-model="resetForm.password"
@@ -39,7 +39,8 @@
 
 <script>
     import { isWscnEmail } from 'utils/validate';
-    // import { restPWD } from 'api/login';
+    import { restPWD } from 'api/login';
+    import store from 'store';
 
     export default {
       name: 'reset',
@@ -70,23 +71,25 @@
         return {
           resetForm: {
             email: '',
+            userName: store.getters.userName,
+            passwordOld: '',
             password: '',
             checkPass: '',
             code: ''
           },
           passwordType: 'password',
           resetRules: {
-            email: [
-                        { required: true, trigger: 'blur', validator: validateEmail }
+            userName: [
+                        { required: true, trigger: 'blur'}
+            ],
+            passwordOld: [
+                        { required: true, trigger: 'blur'}
             ],
             password: [
                         { required: true, trigger: 'blur', validator: validaePass }
             ],
             checkPass: [
                         { required: true, trigger: 'blur', validator: validatePass2 }
-            ],
-            code: [
-                        { required: true, message: '必填项', trigger: 'blur' }
             ]
           },
           loading: false
@@ -94,26 +97,25 @@
       },
       methods: {
         setPWD() {
-          // this.loading = true;
-          // const _this = this;
-          // this.$refs.resetForm.validate(valid => {
-          //   if (valid) {
-          //     const data = {
-          //       email: this.resetForm.email,
-          //       code: this.resetForm.code,
-          //       new_password: this.resetForm.checkPass
-          //     };
-          //     restPWD(data).then(() => {
-          //       this.$message.success('密码设置成功,五秒后调整到登录页');
-          //       setTimeout(() => {
-          //         _this.$router.push({ path: '/login' })
-          //       }, 5 * 1000)
-          //     });
-          //   } else {
-          //     this.$message.error('error submit!!');
-          //   }
-          //   this.loading = false;
-          // });
+          this.loading = true;
+          const _this = this;
+          this.$refs.resetForm.validate(valid => {
+            if (valid) {
+              
+              restPWD(this.resetForm.userName, this.resetForm.passwordOld, this.resetForm.password).then(() => {
+                this.$message.success('密码设置成功,五秒后调整到登录页');
+                setTimeout(() => {
+                  this.$store.dispatch('LogOut').then(() => {
+                    location.reload();// 为了重新实例化vue-router对象 避免bug
+                    _this.$router.push({ path: '/login' })
+                  });
+                }, 5 * 1000)
+              });
+            } else {
+              this.$message.error('error submit!!');
+            }
+            this.loading = false;
+          });
         },
         togglePasswordType() {
           if (this.passwordType === 'text') {
