@@ -3,7 +3,7 @@
         <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left"
                  label-width="0px"
                  class="card-box login-form">
-            <h3 class="title">新起航支付平台</h3>
+            <h3 class="title">新企航支付平台</h3>
             <el-form-item prop="email">
                 <span class="svg-container"><wscn-icon-svg icon-class="jiedianyoujian"/></span>
                 <el-input name="email" type="text" v-model="loginForm.email" autoComplete="on"
