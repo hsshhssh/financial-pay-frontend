@@ -6,8 +6,10 @@
       <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="序号" v-model="listQuery.search.id_eq">
       </el-input>
 
-      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="appId" v-model="listQuery.search.appId_eq">
-      </el-input>
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.appId_eq" placeholder="应用">
+        <el-option v-for="item in appIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
+        </el-option>
+      </el-select>
 
       <br/>
       <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.timeType" placeholder="时间类型">
@@ -27,41 +29,42 @@
 
     <!-- 列表 -->
     <el-table  :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
-
-      <el-table-column align="center" label="序号" width="65">
+    
+      <el-table-column width="180px" align="center" label="订单时间">
         <template scope="scope">
-          <span>{{scope.row.id}}</span>
+          <span>{{scope.row.orderTime | parseTime('{y}-{m}-{d}')}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="用户Id" width="65">
+      <el-table-column align="center" label="商户名称" width="100">
         <template scope="scope">
-          <span>{{scope.row.userId}}</span>
+          <span>{{scope.row.userName}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="appId" width="65">
+      <el-table-column align="center" label="应用名称" width="100">
         <template scope="scope">
-          <span>{{scope.row.appId}}</span>
+          <span>{{scope.row.appId | appFilter}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="订单总金额" width="65">
+      
+      <el-table-column align="center" label="订单总金额" width="120">
         <template scope="scope">
-          <span>{{scope.row.totalMoney}}</span>
+          <span>{{scope.row.totalMoneyYuan}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="手续费总金额" width="65">
+      <el-table-column align="center" label="手续费总金额" width="140">
         <template scope="scope">
-          <span>{{scope.row.totalHandlingCharge}}</span>
+          <span>{{scope.row.totalHandlingChargeYuan}}</span>
         </template>
       </el-table-column>
 
 
-      <el-table-column align="center" label="应结总金额" width="65">
+      <el-table-column align="center" label="应结总金额" width="140">
         <template scope="scope">
-          <span>{{scope.row.settlementMoney}}</span>
+          <span>{{scope.row.settlementMoneyYuan}}</span>
         </template>
       </el-table-column>
 
@@ -94,13 +97,17 @@
 
     import {deleteEmptyProperty} from 'utils/filter'
     import { settlementList } from 'api/financial/pay_settlement'
+    import { appListNoPage } from 'api/financial/pay_app'
 
     import store from 'store';
 
     const timeTypeOptions = [
+      { key: 'orderTime', display_name: '订单时间' },
       { key: 'createTime', display_name: '创建时间' },
       { key: 'updateTime', display_name: '修改时间' }
     ]
+
+    let appIdOptionsObj = {}
 
     const pickerOptions2 = {
           shortcuts: [{
@@ -150,7 +157,8 @@
             limit: 10,
             timeType: undefined,
             search: {
-              userId_eq: store.getters.uid
+              userId_eq: store.getters.uid,
+              appId_eq: undefined
             }
           },
           temp: {
@@ -165,6 +173,7 @@
           importanceOptions: [1, 2, 3],
           pickerOptions2,
           timeTypeOptions,
+          appIdOptions: [],
           listTimeRange: [],
           sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
           statusOptions: ['published', 'draft', 'deleted'],
@@ -182,6 +191,7 @@
       },
       created() {
         this.getList();
+        this.getAppList();
       },
       filters: {
         statusFilter(status) {
@@ -194,6 +204,9 @@
         },
         typeFilter(type) {
           return calendarTypeKeyValue[type]
+        },
+        appFilter(type) {
+          return appIdOptionsObj[type]
         }
       },
       methods: {
@@ -216,6 +229,18 @@
             this.total = response.data.total;
             this.listLoading = false;
             console.log(response)
+          })
+        },
+        getAppList() {
+          appListNoPage(store.getters.uid).then(response => {
+            let data = response.data;
+            for(let i=0; i<data.length; i++) {
+              this.appIdOptions.push({key: data[i].id, display_name: data[i].appName});
+            }
+            appIdOptionsObj = this.appIdOptions.reduce((acc, cur) => {
+              acc[cur.key] = cur.display_name;
+              return acc
+            }, {});
           })
         },
         handleFilter() {
@@ -314,20 +339,35 @@
         handleDownload() {
           require.ensure([], () => {
             const { export_json_to_excel } = require('vendor/Export2Excel');
-            const tHeader = ['序号', '用户Id', 'appId', '订单总金额', '手续费总金额', '应结总金额', '创建时间', '修改时间'];
-            const filterVal = ['id', 'userId', 'appId', 'totalMoney', 'totalHandlingCharge', 'settlementMoney', 'createTime', 'updateTime'];
+            const tHeader = ['序号', '商户名称', '应用名称', '订单总金额', '手续费总金额', '应结总金额', '订单时间','创建时间', '修改时间'];
+            const filterVal = [
+              { name: 'id' },
+              { name: 'userName' },
+              { name: 'appId', filterOptionsObj: appIdOptionsObj },
+              { name: 'totalMoneyYuan' },
+              { name: 'totalHandlingChargeYuan' },
+              { name: 'totalHandlingChargeYuan' },
+              { name: 'orderTime', filterFunction: parseTime },
+              { name: 'createTime', filterFunction: parseTime },
+              { name: 'updateTime', filterFunction: parseTime }
+
+            ];
             const data = this.formatJson(filterVal, this.list);
             export_json_to_excel(tHeader, data, '结算数据');   
           })
         },
         formatJson(filterVal, jsonData) {
-          return jsonData.map(v => filterVal.map(j => {
-            if (j === 'timestamp') {
-              return parseTime(v[j])
+          let data = jsonData.map(v => filterVal.map(j => {
+            if (j['filterOptionsObj'] !== undefined) {
+              return j['filterOptionsObj'][v[j['name']]]
+            } else if (j['filterFunction'] !== undefined) {
+              let func = eval(j['filterFunction'])
+              return func(v[j['name']])
             } else {
-              return v[j]
+              return v[j['name']]
             }
-          }))
+          }));
+          return data;
         }
       }
     }
