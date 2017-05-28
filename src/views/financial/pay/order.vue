@@ -101,25 +101,25 @@
 
       <el-table-column width="180px" align="center" label="回调成功时间">
         <template scope="scope">
-          <span>{{scope.row.callbackSuccessTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.callbackSuccessTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="180px" align="center" label="回调失败时间">
         <template scope="scope">
-          <span>{{scope.row.callFailTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.callbackFailTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="180px" align="center" label="创建时间">
         <template scope="scope">
-          <span>{{scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.createTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="180px" align="center" label="修改时间">
         <template scope="scope">
-          <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.updateTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -264,6 +264,14 @@
         },
         appFilter(type) {
           return appIdOptionsObj[type]
+        },
+        timeFilter(time) {
+          if(time == 0) {
+            return 0
+          }
+          else {
+            return parseTime(time, '{y}-{m}-{d} {h}:{i}')
+          }
         }
       },
       methods: {
@@ -312,15 +320,6 @@
         handleCurrentChange(val) {
           this.listQuery.page = val;
           this.getList();
-        },
-        timeFilter(time) {
-          if (!time[0]) {
-            this.listQuery.start = undefined;
-            this.listQuery.end = undefined;
-            return;
-          }
-          this.listQuery.start = parseInt(+time[0] / 1000);
-          this.listQuery.end = parseInt((+time[1] + 3600 * 1000 * 24) / 1000);
         },
         handleModifyStatus(row, status) {
           this.$message({

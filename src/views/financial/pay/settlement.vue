@@ -32,7 +32,7 @@
     
       <el-table-column width="180px" align="center" label="订单时间">
         <template scope="scope">
-          <span>{{scope.row.orderTime | parseTime('{y}-{m}-{d}')}}</span>
+          <span>{{scope.row.orderTime | timeFilter('{y}-{m}-{d}')}}</span>
         </template>
       </el-table-column>
 
@@ -70,13 +70,13 @@
 
       <el-table-column width="180px" align="center" label="创建时间">
         <template scope="scope">
-          <span>{{scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.createTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="180px" align="center" label="修改时间">
         <template scope="scope">
-          <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.updateTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
     </el-table>
