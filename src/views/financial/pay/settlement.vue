@@ -207,6 +207,14 @@
         },
         appFilter(type) {
           return appIdOptionsObj[type]
+        },
+        timeFilter(time) {
+          if(time == 0) {
+            return 0
+          }
+          else {
+            return parseTime(time, '{y}-{m}-{d} {h}:{i}')
+          }
         }
       },
       methods: {

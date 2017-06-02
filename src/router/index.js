@@ -222,7 +222,7 @@ export const asyncRouterMap = [
       children: [
                 { path: 'order', component: PayOrder, name: '支付订单'},
                 { path: 'settlement', component: Settlement, name: '结算记录' },
-                { path: 'failCallback', component: FailCallback, name: '回调失败记录', meta: {role: ['admin']} },
+                { path: 'failCallback', component: FailCallback, name: '回调失败记录' },
       ]
     },
 
