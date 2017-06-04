@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style,indent */
 import axios from 'axios';
 import { Message } from 'element-ui';
 import store from '../store';
@@ -24,7 +25,10 @@ service.interceptors.request.use(config => {
 
 // respone拦截器
 service.interceptors.response.use(
-  response => response
+  response => {
+      // console.log(response)
+      return response
+  }
   /**
   * 下面的注释为通过response自定义code来标示请求状态，当code返回如下情况为权限有问题，登出并返回到登录页
   * 如通过xmlhttprequest 状态码标识 逻辑可写在下面error中
@@ -46,12 +50,21 @@ service.interceptors.response.use(
   // }
   ,
   error => {
-    console.log('err' + error);// for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    });
+      console.log(error.response);// for debug
+      if (error.response.status == 500 && error.response.data.status >= 40000) {
+          Message({
+            message: error.response.data.message,
+            type: 'error',
+            duration: 3 * 1000
+          });
+      } else {
+          Message({
+              message: '系统异常',
+              type: 'error',
+              duration: 3 * 1000
+          });
+      }
+
     return Promise.reject(error);
   }
 )

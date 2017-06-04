@@ -66,6 +66,8 @@ const PayOrder = resolve => require(['../views/financial/pay/order'], resolve);
 const Settlement = resolve => require(['../views/financial/pay/settlement'], resolve);
 const FailCallback = resolve => require(['../views/financial/pay/failCallback'], resolve);
 
+/*应用管理*/
+const AppList = resolve => require(['../views/financial/app/list'], resolve);
 
 Vue.use(Router);
 
@@ -224,8 +226,17 @@ export const asyncRouterMap = [
                 { path: 'settlement', component: Settlement, name: '结算记录' },
                 { path: 'failCallback', component: FailCallback, name: '回调失败记录' },
       ]
-    },
-
-
+  },
+  {
+      path: '/financial/app',
+      component: Layout,
+      redirect: 'noredirect',
+      name: '应用管理',
+      meta: { role: ['admin'] },
+      icon: 'zujian',
+      children: [
+        { path: 'list', component: AppList, name: '应用列表' }
+      ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ];

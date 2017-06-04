@@ -91,7 +91,8 @@
                 // this.showDialog = true;
               }).catch(err => {
                 this.loading = false;
-                this.$message.error(err);
+//                console.log(err);
+//                this.$message.error(err);
               });
             } else {
               console.log('error submit!!');
