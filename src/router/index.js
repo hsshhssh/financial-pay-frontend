@@ -232,7 +232,7 @@ export const asyncRouterMap = [
       component: Layout,
       redirect: 'noredirect',
       name: '应用管理',
-      meta: { role: ['admin'] },
+      meta: { role: ['payUser', 'admin'] },
       icon: 'zujian',
       children: [
         { path: 'list', component: AppList, name: '应用列表' }
