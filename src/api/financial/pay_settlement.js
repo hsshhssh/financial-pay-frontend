@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import fetch from 'utils/fetch';
 import {deleteEmptyProperty} from 'utils/filter';
 import {deepCoyp} from 'utils/copy';
@@ -18,4 +19,11 @@ export function settlementList(search, page, size) {
     data: params,
     headers:{'Content-Type':'application/x-www-form-urlencoded'}
   });
+}
+
+export function appSettlementList(day) {
+    return fetch({
+        url: '/xqh/financial/settlement/app/' + day,
+        method: 'get'
+    });
 }

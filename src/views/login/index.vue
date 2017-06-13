@@ -67,7 +67,7 @@
                 { required: true, trigger: 'blur', message: 'username is required'}
             ],
             password: [
-                // { required: true, trigger: 'blur', validator: validatePass }
+//                 { required: true, trigger: 'blur', validator: validatePass },
                 { required: true, trigger: 'blur'}
             ]
           },

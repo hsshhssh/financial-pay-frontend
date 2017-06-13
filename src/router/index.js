@@ -1,3 +1,4 @@
+/* eslint-disable indent,linebreak-style */
 import Vue from 'vue';
 import Router from 'vue-router';
 
@@ -64,10 +65,15 @@ const Permission = resolve => require(['../views/permission/index'], resolve);
 /* 支付平台 */
 const PayOrder = resolve => require(['../views/financial/pay/order'], resolve);
 const Settlement = resolve => require(['../views/financial/pay/settlement'], resolve);
+const RealTimeData = resolve => require(['../views/financial/pay/realTimeData'], resolve);
 const FailCallback = resolve => require(['../views/financial/pay/failCallback'], resolve);
 
-/*应用管理*/
+/* 应用管理 */
 const AppList = resolve => require(['../views/financial/app/list'], resolve);
+
+/* 运营管理 */
+const UserList = resolve => require(['../views/financial/operation/user'], resolve);
+
 
 Vue.use(Router);
 
@@ -222,9 +228,10 @@ export const asyncRouterMap = [
       meta: { role: ['payUser', 'admin'] },
       icon: 'zonghe',
       children: [
-                { path: 'order', component: PayOrder, name: '支付订单'},
+                { path: 'order', component: PayOrder, name: '支付订单' },
                 { path: 'settlement', component: Settlement, name: '结算记录' },
-                { path: 'failCallback', component: FailCallback, name: '回调失败记录' },
+                { path: 'realTimeData', component: RealTimeData, name: '当日实时记录' },
+                { path: 'failCallback', component: FailCallback, name: '回调失败记录' }
       ]
   },
   {
@@ -238,5 +245,22 @@ export const asyncRouterMap = [
         { path: 'list', component: AppList, name: '应用列表' }
       ]
   },
+    {
+        path: '/financial/operation',
+        component: Layout,
+        redirect: 'noredirect',
+        name: '运营管理',
+        meta: { role: ['admin'] },
+        icon: 'tubiaoleixingzhengchang',
+        children: [
+            { path: 'user', component: UserList, name: '用户' },
+            { path: 'app', component: AppList, name: '应用' },
+            { path: 'order', component: AppList, name: '订单管理' },
+            { path: 'settlement', component: AppList, name: '结算管理' },
+            { path: 'failCallback', component: AppList, name: '回调失败记录管理' },
+            { path: 'payPlatform', component: AppList, name: '支付平台管理' },
+            { path: 'role', component: AppList, name: '角色管理' }
+        ]
+    },
   { path: '*', redirect: '/404', hidden: true }
 ];

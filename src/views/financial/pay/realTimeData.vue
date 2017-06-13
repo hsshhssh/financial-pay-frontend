@@ -3,28 +3,19 @@
 
         <!-- 搜索区域 -->
         <div class="filter-container">
-            <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="应用ID" v-model="listQuery.search.id_eq">
-            </el-input>
 
-            <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="应用名称" v-model="listQuery.search.appName_like">
-            </el-input>
-
-            <el-input @keyup.enter.native="handleFilter" style="width: 250px;" class="filter-item" placeholder="秘钥" v-model="listQuery.search.secretkey_eq">
-            </el-input>
         </div>
 
-
+        <!--按钮区域-->
         <div class="filter-container">
-            <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
-            <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
-            <el-button class="filter-item" type="primary" icon="plus" @click="handleCreate">添加</el-button>
+
         </div>
 
         <!-- 列表 -->
         <el-table  :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
-            <el-table-column align="center" label="应用ID" width="90">
+            <el-table-column width="180px" align="center" label="订单时间">
                 <template scope="scope">
-                    <span>{{scope.row.id}}</span>
+                    <span>{{scope.row.createTime | timeFilter('{y}-{m}-{d}')}}</span>
                 </template>
             </el-table-column>
 
@@ -36,38 +27,39 @@
 
             <el-table-column align="center" label="应用名称" width="100">
                 <template scope="scope">
-                    <span>{{scope.row.appName}}</span>
+                    <span>{{scope.row.appId | appFilter}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="回调地址" width="200">
+
+            <el-table-column align="center" label="订单总金额" width="120">
                 <template scope="scope">
-                    <span>{{scope.row.callbackUrl}}</span>
+                    <span>{{scope.row.totalMoneyYuan}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="返回地址" width="200">
+            <el-table-column align="center" label="手续费总金额" width="140">
                 <template scope="scope">
-                    <span>{{scope.row.nodifyUrl}}</span>
+                    <span>{{scope.row.totalHandlingChargeYuan}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="秘钥" width="200">
+
+            <el-table-column align="center" label="应结总金额" width="140">
                 <template scope="scope">
-                    <span>{{scope.row.secretkey}}</span>
+                    <span>{{scope.row.settlementMoneyYuan}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="创建时间" width="160">
+            <el-table-column width="180px" align="center" label="创建时间">
                 <template scope="scope">
-                    <span>{{scope.row.createTime | timeFilter('{y}-{m}-{d} {h}:{i}')}} </span>
+                    <span>{{scope.row.createTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column  align="center" label="操作" width="100">
+            <el-table-column width="180px" align="center" label="修改时间">
                 <template scope="scope">
-                    <el-button size="small" type="success" @click="handleUpdate(scope.row)">编辑
-                    </el-button>
+                    <span>{{scope.row.updateTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
                 </template>
             </el-table-column>
 
@@ -75,31 +67,12 @@
 
         <!-- 分页信息 -->
         <div v-show="!listLoading" class="pagination-container">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-            </el-pagination>
+
         </div>
 
         <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-            <el-form class="small-space" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;' ref="tempForm">
-                <el-form-item label="商户名称">
-                    <el-input v-model="userName" :disabled="true"></el-input>
-                </el-form-item>
+            <el-form class="small-space" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
 
-                <el-form-item label="应用名称">
-                    <el-input v-model="temp.appName"></el-input>
-                </el-form-item>
-
-                <el-form-item label="回调地址">
-                    <el-input v-model="temp.callbackUrl"></el-input>
-                </el-form-item>
-
-                <el-form-item label="返回地址">
-                    <el-input v-model="temp.nodifyUrl"></el-input>
-                </el-form-item>
-
-                <el-form-item label="秘钥" v-if="dialogStatus=='update'">
-                    <el-input v-model="temp.secretkey" :disabled="true"></el-input>
-                </el-form-item>
 
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -113,13 +86,16 @@
 </template>
 
 <script>
-    /* eslint-disable no-unused-vars,indent,linebreak-style,prefer-const,padded-blocks,no-empty-function,linebreak-style,brace-style,no-trailing-spaces,dot-notation */
+    /* eslint-disable no-unused-vars,indent,linebreak-style,prefer-const,padded-blocks,no-empty-function,linebreak-style,brace-style,no-trailing-spaces,dot-notation,no-extra-parens */
 
     import { parseTime, objectMerge } from 'utils';
     import store from 'store';
 
     import { Message } from 'element-ui';
-    import { appList, appCreate, appUpdate } from 'api/financial/app_list'
+    import { appSettlementList } from 'api/financial/pay_settlement'
+    import { appListNoPage } from 'api/financial/pay_app'
+
+    let appIdOptionsObj = {}
 
     export default {
         name: 'table_demo',
@@ -145,20 +121,25 @@
                 },
                 temp: {
 
-                }
+                },
+                appIdOptions: []
             }
         },
         created() {
-            this.getList();
+            this.getAppList()
+            this.getList()
         },
         filters: {
-            timeFilter(time) {
+            timeFilter(time, format) {
                 if (time === 0) {
                     return 0
                 }
                 else {
-                    return parseTime(time, '{y}-{m}-{d} {h}:{i}')
+                    return parseTime(time, format)
                 }
+            },
+            appFilter(type) {
+                return appIdOptionsObj[type]
             }
 
         },
@@ -167,14 +148,28 @@
             getList() {
                 this.listLoading = true;
 
-                let page = this.listQuery.page;
-                let size = this.listQuery.limit;
-                let search = this.listQuery.search;
+                appSettlementList(0).then(response => {
 
-                appList(search, page, size).then(response => {
-                    this.list = response.data.list
-                    this.total = response.data.total
-                    this.listLoading = false;
+                    if (response.status === 200) {
+                        let userId = store.getters.uid
+                        let list = []
+                        let data = response.data
+                        for (let key in data) {
+                            if (data[key].userId === userId) {
+                                data[key].userName = store.getters.name
+                                data[key].totalMoneyYuan = (data[key].totalMoney) / 100
+                                data[key].totalHandlingChargeYuan = (data[key].totalHandlingCharge) / 100
+                                data[key].settlementMoneyYuan = (data[key].settlementMoney) / 100
+                                list.push(data[key])
+                            }
+                        }
+                        this.list = list
+                        this.total = list.length
+
+                        this.listLoading = false;
+                    }
+
+
                 })
 
             },
@@ -280,6 +275,19 @@
                     }
                 }));
                 return data;
+            },
+
+            getAppList() {
+                appListNoPage(store.getters.uid).then(response => {
+                    let data = response.data;
+                    for (let i = 0; i < data.length; i++) {
+                        this.appIdOptions.push({ key: data[i].id, display_name: data[i].appName });
+                    }
+                    appIdOptionsObj = this.appIdOptions.reduce((acc, cur) => {
+                        acc[cur.key] = cur.display_name;
+                        return acc
+                    }, {});
+                })
             }
         }
     }
