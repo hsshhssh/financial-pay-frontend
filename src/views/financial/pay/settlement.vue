@@ -11,6 +11,11 @@
         </el-option>
       </el-select>
 
+        <el-select clearable @change='handleFilter' style="width: 150px" class="filter-item" v-model="listQuery.sort" placeholder="排序">
+            <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key">
+            </el-option>
+        </el-select>
+
       <br/>
       <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.timeType" placeholder="时间类型">
         <el-option v-for="item in timeTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
@@ -109,6 +114,11 @@
 
     let appIdOptionsObj = {}
 
+    const sortOptions = [
+        { label: '创建时间降序', key: 'id_desc' },
+        { label: '创建时间升序', key: 'id_asc' }
+    ]
+
     const pickerOptions2 = {
           shortcuts: [{
             text: '最近一天',
@@ -159,7 +169,8 @@
             search: {
               userId_eq: store.getters.uid,
               appId_eq: undefined
-            }
+            },
+            sort: undefined
           },
           temp: {
             id: undefined,
@@ -175,7 +186,7 @@
           timeTypeOptions,
           appIdOptions: [],
           listTimeRange: [],
-          sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
+          sortOptions,
           statusOptions: ['published', 'draft', 'deleted'],
           dialogFormVisible: false,
           dialogStatus: '',
@@ -232,7 +243,9 @@
             search[this.listQuery.timeType + '_lte'] = Date.parse(this.listTimeRange[1])/1000;
           } 
 
-          settlementList(search, page, size).then(response => {
+          let sort = []
+          sort.push(this.listQuery.sort)
+          settlementList(search, page, size, sort).then(response => {
             this.list = response.data.list;
             this.total = response.data.total;
             this.listLoading = false;

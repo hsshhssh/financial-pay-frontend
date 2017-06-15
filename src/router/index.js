@@ -66,6 +66,7 @@ const Permission = resolve => require(['../views/permission/index'], resolve);
 const PayOrder = resolve => require(['../views/financial/pay/order'], resolve);
 const Settlement = resolve => require(['../views/financial/pay/settlement'], resolve);
 const RealTimeData = resolve => require(['../views/financial/pay/realTimeData'], resolve);
+const MonthSettlement = resolve => require(['../views/financial/pay/monthSettlement'], resolve);
 const FailCallback = resolve => require(['../views/financial/pay/failCallback'], resolve);
 
 /* 应用管理 */
@@ -231,6 +232,7 @@ export const asyncRouterMap = [
                 { path: 'order', component: PayOrder, name: '支付订单' },
                 { path: 'settlement', component: Settlement, name: '结算记录' },
                 { path: 'realTimeData', component: RealTimeData, name: '当日实时记录' },
+                { path: 'monthSettlement', component: MonthSettlement, name: '每月结算记录' },
                 { path: 'failCallback', component: FailCallback, name: '回调失败记录' }
       ]
   },
