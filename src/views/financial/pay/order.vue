@@ -145,7 +145,8 @@
     import store from 'store';
 
     const payTypeOptions = [
-      { key: 1, display_name: '微信wap支付' }
+      { key: 1, display_name: '微信wap支付' },
+      { key: 2, display_name: '支付宝wap支付' }
     ]
 
     const callbackStateOptions = [
