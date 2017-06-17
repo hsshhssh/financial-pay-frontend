@@ -201,8 +201,8 @@
         }
       },
       created() {
-        this.getList();
-        this.getAppList();
+          this.getAppList();
+          this.getList();
       },
       filters: {
         statusFilter(status) {
