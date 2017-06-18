@@ -19,6 +19,19 @@ export function userList(search, page, size) {
     })
 }
 
+export function userListNoPage() {
+    const params = new FormData()
+    params.append('search', '{}')
+    params.append('page', 1)
+    params.append('size', 1000)
+    return fetch({
+        url: '/pay/user/list',
+        method: 'post',
+        data: params,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+}
+
 export function userCreate(body) {
     const bodyCopy = deepCoyp(body)
     return fetch({

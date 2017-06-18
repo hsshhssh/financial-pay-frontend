@@ -15,59 +15,59 @@
             </a>
             <div class="info-container">
                 <span class="display_name">{{name}}</span>
-                <div class="info-wrapper">
-                    <div class="info-item" :to="'/article/wscnlist?uid='+uid">
-                         <countTo class="info-item-num" :startVal='0' :endVal='statisticsData.article_count' :duration='3400'></countTo>
-                        <span class="info-item-text">文章</span>
-                        <wscn-icon-svg icon-class="a" class="dashboard-editor-icon"/>
-                    </div>
-                    <div class="info-item" style="cursor: auto">
-                        <countTo class="info-item-num"  :startVal='0' :endVal='statisticsData.pageviews_count' :duration='3600'></countTo>
-                        <span class="info-item-text">浏览量</span>
-                        <wscn-icon-svg icon-class="b" class="dashboard-editor-icon"/>
-                    </div>
-                    <div class="info-item" :to="'/comment/commentslist?res_author_id='+uid">
-                         <countTo class="info-item-num" ref='countTo3' :startVal='0' :endVal='statisticsData.comment_count' :duration='3800'></countTo>
-                        <span class="info-item-text">评论</span>
-                        <wscn-icon-svg icon-class="c" class="dashboard-editor-icon"/>
-                    </div>
-                </div>
+                <!--<div class="info-wrapper">-->
+                    <!--<div class="info-item" :to="'/article/wscnlist?uid='+uid">-->
+                         <!--<countTo class="info-item-num" :startVal='0' :endVal='statisticsData.article_count' :duration='3400'></countTo>-->
+                        <!--<span class="info-item-text">文章</span>-->
+                        <!--<wscn-icon-svg icon-class="a" class="dashboard-editor-icon"/>-->
+                    <!--</div>-->
+                    <!--<div class="info-item" style="cursor: auto">-->
+                        <!--<countTo class="info-item-num"  :startVal='0' :endVal='statisticsData.pageviews_count' :duration='3600'></countTo>-->
+                        <!--<span class="info-item-text">浏览量</span>-->
+                        <!--<wscn-icon-svg icon-class="b" class="dashboard-editor-icon"/>-->
+                    <!--</div>-->
+                    <!--<div class="info-item" :to="'/comment/commentslist?res_author_id='+uid">-->
+                         <!--<countTo class="info-item-num" ref='countTo3' :startVal='0' :endVal='statisticsData.comment_count' :duration='3800'></countTo>-->
+                        <!--<span class="info-item-text">评论</span>-->
+                        <!--<wscn-icon-svg icon-class="c" class="dashboard-editor-icon"/>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
         </div>
 
-        <div class="btn-group">
-            <router-link class="pan-btn blue-btn" to="/components/index">组件</router-link>
-            <router-link class="pan-btn light-blue-btn" to="/charts/index">图表</router-link>
-            <router-link class="pan-btn red-btn" to="/errorpage/404">错误页面</router-link>
-            <router-link class="pan-btn pink-btn" to="/excel/download">导出excel</router-link>
-            <router-link class="pan-btn green-btn" to="/example/table">table</router-link>
-            <router-link class="pan-btn tiffany-btn" to="/example/form1">form</router-link>
-        </div>
+        <!--<div class="btn-group">-->
+            <!--<router-link class="pan-btn blue-btn" to="/components/index">组件</router-link>-->
+            <!--<router-link class="pan-btn light-blue-btn" to="/charts/index">图表</router-link>-->
+            <!--<router-link class="pan-btn red-btn" to="/errorpage/404">错误页面</router-link>-->
+            <!--<router-link class="pan-btn pink-btn" to="/excel/download">导出excel</router-link>-->
+            <!--<router-link class="pan-btn green-btn" to="/example/table">table</router-link>-->
+            <!--<router-link class="pan-btn tiffany-btn" to="/example/form1">form</router-link>-->
+        <!--</div>-->
 
-        <div class="clearfix main-dashboard-container">
-            <div class="chart-container">
-                <MonthKpi style="border-bottom: 1px solid #DEE1E2;"
-                          :articlesComplete='statisticsData.month_article_count'></MonthKpi>
-                <ArticlesChart :listData='statisticsData.week_article'></ArticlesChart>
-            </div>
-            <div class="recent-articles-container">
-                <div class="recent-articles-title">最近撸了</div>
-                <div class="recent-articles-wrapper">
-                    <template v-if="recentArticles.length!=0">
-                        <div class="recent-articles-item" v-for="item in  recentArticles">
-                            <span class="recent-articles-status">{{item.status | statusFilter}}</span>
-                             <span class="recent-articles-content" :to="'/article/edit/'+item.id">
-                                {{item.title}}
-                            </span>
-                            <span class="recent-articles-time">{{item.author}}</span>
-                        </div>
-                    </template>
-                    <template v-else>
-                        <div class="recent-articles-emptyTitle">你太懒了最近都没有撸</div>
-                    </template>
-                </div>
-            </div>
-        </div>
+        <!--<div class="clearfix main-dashboard-container">-->
+            <!--<div class="chart-container">-->
+                <!--<MonthKpi style="border-bottom: 1px solid #DEE1E2;"-->
+                          <!--:articlesComplete='statisticsData.month_article_count'></MonthKpi>-->
+                <!--<ArticlesChart :listData='statisticsData.week_article'></ArticlesChart>-->
+            <!--</div>-->
+            <!--<div class="recent-articles-container">-->
+                <!--<div class="recent-articles-title">最近撸了</div>-->
+                <!--<div class="recent-articles-wrapper">-->
+                    <!--<template v-if="recentArticles.length!=0">-->
+                        <!--<div class="recent-articles-item" v-for="item in  recentArticles">-->
+                            <!--<span class="recent-articles-status">{{item.status | statusFilter}}</span>-->
+                             <!--<span class="recent-articles-content" :to="'/article/edit/'+item.id">-->
+                                <!--{{item.title}}-->
+                            <!--</span>-->
+                            <!--<span class="recent-articles-time">{{item.author}}</span>-->
+                        <!--</div>-->
+                    <!--</template>-->
+                    <!--<template v-else>-->
+                        <!--<div class="recent-articles-emptyTitle">你太懒了最近都没有撸</div>-->
+                    <!--</template>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
     </div>
 </template>
 

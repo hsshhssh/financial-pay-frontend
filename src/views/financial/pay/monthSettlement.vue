@@ -4,6 +4,11 @@
         <!-- 搜索区域 -->
         <div class="filter-container">
 
+            <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.userId_eq" placeholder="商户" v-if="isAdminRole">
+                <el-option v-for="item in userIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
+                </el-option>
+            </el-select>
+
             <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.appId" placeholder="应用">
                 <el-option v-for="item in appIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
                 </el-option>
@@ -105,6 +110,8 @@
     import { Message } from 'element-ui';
     import { appMonthSettlement } from 'api/financial/pay_settlement'
     import { appListNoPage } from 'api/financial/pay_app'
+    import { userListNoPage } from 'api/financial/user'
+    import { getUidWithUndefined, isAdminRole } from 'src/utils/permission.js'
 
     let appIdOptionsObj = {}
 
@@ -113,6 +120,7 @@
         data() {
             return {
                 userName: store.getters.name,
+                isAdminRole: isAdminRole(),
                 list: null,
                 total: null,
                 listLoading: true,
@@ -121,7 +129,8 @@
                     limit: 10,
                     search: {
                         appId: undefined,
-                        month: undefined
+                        month: undefined,
+                        userId: undefined
                     }
                 },
                 tableKey: 0,
@@ -135,10 +144,12 @@
 
                 },
                 appIdOptions: [],
+                userIdOptions: [],
                 month: new Date()
             }
         },
         created() {
+            this.getUserList()
             this.getAppList()
             this.getList()
         },
@@ -160,7 +171,7 @@
             // 查询列表信息
             getList() {
                 this.listLoading = true;
-                let userId = store.getters.uid
+                let userId = this.listQuery.search.userId_eq
                 let appId = this.listQuery.search.appId
 
                 let month = 0
@@ -289,6 +300,7 @@
             getAppList() {
                 appListNoPage(store.getters.uid).then(response => {
                     let data = response.data;
+                    this.appIdOptions.push({ key: null, display_name: '全部' })
                     for (let i = 0; i < data.length; i++) {
                         this.appIdOptions.push({ key: data[i].id, display_name: data[i].appName });
                     }
@@ -297,7 +309,17 @@
                         return acc
                     }, {});
                 })
-            }
+            },
+            getUserList() {
+                userListNoPage().then(response => {
+                    if (response.status === 200) {
+                        this.userIdOptions.push({ key: null, display_name: '全部' })
+                        response.data.list.forEach(u => {
+                            this.userIdOptions.push({ key: u.id, display_name: u.name })
+                        })
+                    }
+                })
+            },
         }
     }
 </script>

@@ -3,8 +3,10 @@
 
     <!-- 搜索区域 -->
     <div class="filter-container">
-      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="序号" v-model="listQuery.search.id_eq">
-      </el-input>
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.userId_eq" placeholder="商户" v-if="isAdminRole">
+        <el-option v-for="item in userIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
+        </el-option>
+      </el-select>
 
       <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.appId_eq" placeholder="应用">
         <el-option v-for="item in appIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
@@ -103,6 +105,8 @@
     import {deleteEmptyProperty} from 'utils/filter'
     import { settlementList } from 'api/financial/pay_settlement'
     import { appListNoPage } from 'api/financial/pay_app'
+    import { userListNoPage } from 'api/financial/user'
+    import { getUidWithUndefined, isAdminRole } from 'src/utils/permission.js'
 
     import store from 'store';
 
@@ -162,12 +166,13 @@
           list: null,
           total: null,
           listLoading: true,
+          isAdminRole: isAdminRole(),
           listQuery: {
             page: 1,
             limit: 10,
             timeType: undefined,
             search: {
-              userId_eq: store.getters.uid,
+              userId_eq: undefined,
               appId_eq: undefined
             },
             sort: undefined
@@ -185,6 +190,7 @@
           pickerOptions2,
           timeTypeOptions,
           appIdOptions: [],
+          userIdOptions: [],
           listTimeRange: [],
           sortOptions,
           statusOptions: ['published', 'draft', 'deleted'],
@@ -202,6 +208,7 @@
       },
       created() {
           this.getAppList();
+          this.getUserList();
           this.getList();
       },
       filters: {
@@ -236,6 +243,12 @@
           let size = this.listQuery.limit;
           let search = this.listQuery.search;
 
+          // 处理用户
+          if ( typeof(this.listQuery.search.userId_eq) === 'undefined' && this.listQuery.search.userId_eq !== 0) {
+              this.listQuery.search.userId_eq = getUidWithUndefined()
+          }
+
+          // 处理时间
           delete search.createTime_lte, delete search.createTime_gte; 
           delete search.updateTime_lte, delete search.updateTime_gte; 
           if(typeof(this.listQuery.timeType) != 'undefined' && this.listQuery.timeType != '') {
@@ -243,6 +256,7 @@
             search[this.listQuery.timeType + '_lte'] = Date.parse(this.listTimeRange[1])/1000;
           } 
 
+          // 处理排序
           let sort = []
           sort.push(this.listQuery.sort)
           settlementList(search, page, size, sort).then(response => {
@@ -253,8 +267,9 @@
           })
         },
         getAppList() {
-          appListNoPage(store.getters.uid).then(response => {
+          appListNoPage(getUidWithUndefined()).then(response => {
             let data = response.data;
+            this.appIdOptions.push({ key: null, display_name: '全部' })
             for(let i=0; i<data.length; i++) {
               this.appIdOptions.push({key: data[i].id, display_name: data[i].appName});
             }
@@ -263,6 +278,16 @@
               return acc
             }, {});
           })
+        },
+        getUserList() {
+            userListNoPage().then(response => {
+                if (response.status === 200) {
+                    this.userIdOptions.push({ key: null, display_name: '全部' })
+                    response.data.list.forEach(u => {
+                        this.userIdOptions.push({ key: u.id, display_name: u.name })
+                    })
+                }
+            })
         },
         handleFilter() {
           this.getList();

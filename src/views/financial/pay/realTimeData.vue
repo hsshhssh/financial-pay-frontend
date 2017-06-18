@@ -94,6 +94,7 @@
     import { Message } from 'element-ui';
     import { appSettlementList } from 'api/financial/pay_settlement'
     import { appListNoPage } from 'api/financial/pay_app'
+    import { getUidWithUndefined, isAdminRole } from 'src/utils/permission.js'
 
     let appIdOptionsObj = {}
 
@@ -155,7 +156,7 @@
                         let list = []
                         let data = response.data
                         for (let key in data) {
-                            if (data[key].userId === userId) {
+                            if (data[key].userId === userId || isAdminRole()) {
                                 data[key].userName = store.getters.name
                                 data[key].totalMoneyYuan = (data[key].totalMoney) / 100
                                 data[key].totalHandlingChargeYuan = (data[key].totalHandlingCharge) / 100
@@ -278,7 +279,7 @@
             },
 
             getAppList() {
-                appListNoPage(store.getters.uid).then(response => {
+                appListNoPage(getUidWithUndefined()).then(response => {
                     let data = response.data;
                     for (let i = 0; i < data.length; i++) {
                         this.appIdOptions.push({ key: data[i].id, display_name: data[i].appName });

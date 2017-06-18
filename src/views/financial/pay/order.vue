@@ -9,6 +9,11 @@
       <el-input @keyup.enter.native="handleFilter" style="width: 250px;" class="filter-item" placeholder="商户订单号" v-model="listQuery.search.userOrderNo_eq">
       </el-input>
 
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.userId_eq" placeholder="商户" v-if="isAdminRole">
+        <el-option v-for="item in userIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
+        </el-option>
+      </el-select>
+
       <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.appId_eq" placeholder="应用">
         <el-option v-for="item in appIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
         </el-option>
@@ -138,18 +143,21 @@
     import { fetchList, fetchPv } from 'api/article_table';
     import { parseTime, objectMerge } from 'utils';
 
-    import {deleteEmptyProperty} from 'utils/filter'
     import { orderList } from 'api/financial/pay_order'
     import { appListNoPage } from 'api/financial/pay_app'
+    import { userListNoPage } from 'api/financial/user'
+    import { getUidWithUndefined, isAdminRole } from 'src/utils/permission.js'
 
     import store from 'store';
 
     const payTypeOptions = [
+      { key: null, display_name: '全部' },
       { key: 1, display_name: '微信wap支付' },
       { key: 2, display_name: '支付宝wap支付' }
     ]
 
     const callbackStateOptions = [
+      { key: null, display_name: '全部' },
       { key: 1, display_name: '成功' },
       { key: 2, display_name: '失败' }
     ]
@@ -206,6 +214,7 @@
           list: null,
           total: null,
           listLoading: true,
+          isAdminRole: isAdminRole(),
           listQuery: {
             page: 1,
             limit: 10,
@@ -214,7 +223,7 @@
               payType_eq: undefined,
               callbackState_eq: undefined,
               appId_eq: undefined,
-              userId_eq: store.getters.uid
+              userId_eq: undefined
             }
           },
           temp: {
@@ -230,6 +239,7 @@
           payTypeOptions,
           callbackStateOptions,
           appIdOptions: [],
+          userIdOptions: [],
           pickerOptions2,
           timeTypeOptions,
           listTimeRange: [],
@@ -249,6 +259,7 @@
       },
       created() {
           this.getAppList();
+          this.getUserList()
           this.getList();
       },
       filters: {
@@ -283,6 +294,13 @@
           let size = this.listQuery.limit;
           let search = this.listQuery.search;
 
+
+          // 处理商户
+          if ( typeof(this.listQuery.search.userId_eq) === 'undefined' && this.listQuery.search.userId_eq !== 0) {
+             this.listQuery.search.userId_eq = getUidWithUndefined()
+          }
+
+          // 处理时间
           delete search.createTime_lte, delete search.createTime_gte; 
           delete search.updateTime_lte, delete search.updateTime_gte; 
           delete search.callbackSuccessTime_lte, delete search.callbackSuccessTime_gte; 
@@ -299,15 +317,26 @@
           })
         },
         getAppList() {
-          appListNoPage(store.getters.uid).then(response => {
+          appListNoPage(getUidWithUndefined()).then(response => {
             let data = response.data;
-            for(let i=0; i<data.length; i++) {
-              this.appIdOptions.push({key: data[i].id, display_name: data[i].appName});
+              this.appIdOptions.push({ key: null, display_name: '全部' })
+              for(let i=0; i<data.length; i++) {
+                this.appIdOptions.push({key: data[i].id, display_name: data[i].appName});
             }
             appIdOptionsObj = this.appIdOptions.reduce((acc, cur) => {
               acc[cur.key] = cur.display_name;
               return acc
             }, {});
+          })
+        },
+        getUserList() {
+          userListNoPage().then(response => {
+              if (response.status === 200) {
+                  this.userIdOptions.push({ key: null, display_name: '全部' })
+                  response.data.list.forEach(u => {
+                      this.userIdOptions.push({ key: u.id, display_name: u.name })
+                  })
+              }
           })
         },
         handleFilter() {

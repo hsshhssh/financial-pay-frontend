@@ -164,18 +164,18 @@ export const asyncRouterMap = [
   //               { path: 'mixchart', component: MixChart, name: '混合图表' }
   //   ]
   // },
-  {
-    path: '/errorpage',
-    component: Layout,
-    redirect: 'noredirect',
-    name: '错误页面',
-    icon: '404',
-    meta: { role: ['admin'] },
-    children: [
-                { path: '401', component: Err401, name: '401' },
-                { path: '404', component: Err404, name: '404' }
-    ]
-  },
+  // {
+  //   path: '/errorpage',
+  //   component: Layout,
+  //   redirect: 'noredirect',
+  //   name: '错误页面',
+  //   icon: '404',
+  //   meta: { role: ['admin'] },
+  //   children: [
+  //               { path: '401', component: Err401, name: '401' },
+  //               { path: '404', component: Err404, name: '404' }
+  //   ]
+  // },
   // {
   //   path: '/errlog',
   //   component: Layout,
@@ -256,12 +256,8 @@ export const asyncRouterMap = [
         icon: 'tubiaoleixingzhengchang',
         children: [
             { path: 'user', component: UserList, name: '用户' },
-            { path: 'app', component: AppList, name: '应用' },
-            { path: 'order', component: AppList, name: '订单管理' },
-            { path: 'settlement', component: AppList, name: '结算管理' },
-            { path: 'failCallback', component: AppList, name: '回调失败记录管理' },
-            { path: 'payPlatform', component: AppList, name: '支付平台管理' },
-            { path: 'role', component: AppList, name: '角色管理' }
+            { path: 'payPlatform', component: Err404, name: '支付平台管理' },
+            { path: 'role', component: Err404, name: '角色管理' }
         ]
     },
   { path: '*', redirect: '/404', hidden: true }
