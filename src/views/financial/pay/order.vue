@@ -426,26 +426,29 @@
         },
         handleDownload() {
           require.ensure([], () => {
-            const { export_json_to_excel } = require('vendor/Export2Excel');
-            const tHeader = ['序号', '商户名称', '应用名称', '新企航订单号', '商户订单号', '订单金额', '手续费比例', '支付方式', '回调商户状态', '支付平台订单号', '回调成功时间', '回调商户状态', '创建时间', '修改时间'];
-            const filterVal = [
-              { name: 'id' },
-              { name: 'userName' },
-              { name: 'appId', filterOptionsObj: appIdOptionsObj },
-              { name: 'orderNo' },
-              { name: 'userOrderNo' },
-              { name: 'moneyYuan' },
-              { name: 'interestRatePrecent' },
-              { name: 'payTypeStr'},
-              { name: 'callbackStateStr' },
-              { name: 'platformOrderNo'},
-              { name: 'callbackSuccessTime', filterFunction: parseTime },
-              { name: 'callbackFailTime', filterFunction: parseTime },
-              { name: 'createTime', filterFunction: parseTime },
-              { name: 'orderTime', filterFunction: parseTime }
-            ];
-            const data = this.formatJson(filterVal, this.list);
-            export_json_to_excel(tHeader, data, '订单数据');   
+              orderList({} , 1, 1000).then(response => {
+                  let list = response.data.list;
+                  const { export_json_to_excel } = require('vendor/Export2Excel');
+                  const tHeader = ['序号', '商户名称', '应用名称', '新企航订单号', '商户订单号', '订单金额', '手续费比例', '支付方式', '回调商户状态', '支付平台订单号', '回调成功时间', '回调商户状态', '创建时间', '修改时间'];
+                  const filterVal = [
+                      { name: 'id' },
+                      { name: 'userName' },
+                      { name: 'appId', filterOptionsObj: appIdOptionsObj },
+                      { name: 'orderNo' },
+                      { name: 'userOrderNo' },
+                      { name: 'moneyYuan' },
+                      { name: 'interestRatePrecent' },
+                      { name: 'payTypeStr'},
+                      { name: 'callbackStateStr' },
+                      { name: 'platformOrderNo'},
+                      { name: 'callbackSuccessTime', filterFunction: parseTime },
+                      { name: 'callbackFailTime', filterFunction: parseTime },
+                      { name: 'createTime', filterFunction: parseTime },
+                      { name: 'orderTime', filterFunction: parseTime }
+                  ];
+                  const data = this.formatJson(filterVal, list);
+                  export_json_to_excel(tHeader, data, '订单数据');
+              })
           })
         },
         

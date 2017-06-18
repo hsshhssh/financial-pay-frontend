@@ -385,22 +385,26 @@
         },
         handleDownload() {
           require.ensure([], () => {
-            const { export_json_to_excel } = require('vendor/Export2Excel');
-            const tHeader = ['序号', '商户名称', '应用名称', '订单总金额', '手续费总金额', '应结总金额', '订单时间','创建时间', '修改时间'];
-            const filterVal = [
-              { name: 'id' },
-              { name: 'userName' },
-              { name: 'appId', filterOptionsObj: appIdOptionsObj },
-              { name: 'totalMoneyYuan' },
-              { name: 'totalHandlingChargeYuan' },
-              { name: 'settlementMoneyYuan' },
-              { name: 'orderTime', filterFunction: parseTime },
-              { name: 'createTime', filterFunction: parseTime },
-              { name: 'updateTime', filterFunction: parseTime }
 
-            ];
-            const data = this.formatJson(filterVal, this.list);
-            export_json_to_excel(tHeader, data, '结算数据');   
+              settlementList({}, 1, 1000, null).then(response => {
+                  let list = response.data.list;
+                  const { export_json_to_excel } = require('vendor/Export2Excel');
+                  const tHeader = ['序号', '商户名称', '应用名称', '订单总金额', '手续费总金额', '应结总金额', '订单时间','创建时间', '修改时间'];
+                  const filterVal = [
+                      { name: 'id' },
+                      { name: 'userName' },
+                      { name: 'appId', filterOptionsObj: appIdOptionsObj },
+                      { name: 'totalMoneyYuan' },
+                      { name: 'totalHandlingChargeYuan' },
+                      { name: 'settlementMoneyYuan' },
+                      { name: 'orderTime', filterFunction: parseTime },
+                      { name: 'createTime', filterFunction: parseTime },
+                      { name: 'updateTime', filterFunction: parseTime }
+
+                  ];
+                  const data = this.formatJson(filterVal, list);
+                  export_json_to_excel(tHeader, data, '结算数据');
+              })
           })
         },
         formatJson(filterVal, jsonData) {
