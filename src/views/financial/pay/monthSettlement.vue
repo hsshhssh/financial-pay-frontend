@@ -298,7 +298,7 @@
             },
 
             getAppList() {
-                appListNoPage(store.getters.uid).then(response => {
+                appListNoPage(getUidWithUndefined()).then(response => {
                     let data = response.data;
                     this.appIdOptions.push({ key: null, display_name: '全部' })
                     for (let i = 0; i < data.length; i++) {
