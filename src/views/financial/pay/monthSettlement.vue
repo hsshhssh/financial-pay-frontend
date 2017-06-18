@@ -171,7 +171,13 @@
             // 查询列表信息
             getList() {
                 this.listLoading = true;
-                let userId = this.listQuery.search.userId_eq
+                let userId = 0
+                // 处理商户
+                if ( typeof(this.listQuery.search.userId_eq) === 'undefined' && this.listQuery.search.userId_eq !== 0) {
+                    userId = getUidWithUndefined()
+                } else {
+                    userId = this.listQuery.search.userId_eq
+                }
                 let appId = this.listQuery.search.appId
 
                 let month = 0

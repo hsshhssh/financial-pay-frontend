@@ -107,6 +107,7 @@
     import { appListNoPage } from 'api/financial/pay_app'
     import { userListNoPage } from 'api/financial/user'
     import { getUidWithUndefined, isAdminRole } from 'src/utils/permission.js'
+    import { getZeroTime } from 'src/utils/utils.js'
 
     import store from 'store';
 
@@ -124,40 +125,40 @@
     ]
 
     const pickerOptions2 = {
-          shortcuts: [{
+        shortcuts: [{
             text: '最近一天',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
-              picker.$emit('pick', [start, end]);
+                const end = getZeroTime();
+                const start = getZeroTime();
+                start.setTime(getZeroTime() - 3600 * 1000 * 24 * 1);
+                picker.$emit('pick', [start, end]);
             }
-          },{
+        },{
             text: '最近三天',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
-              picker.$emit('pick', [start, end]);
+                const end = new getZeroTime();
+                const start = getZeroTime();
+                start.setTime(getZeroTime() - 3600 * 1000 * 24 * 3);
+                picker.$emit('pick', [start, end]);
             }
-          },{
-            text: '最近一周',
+        },{
+            text: '最近7天',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
+                const end = getZeroTime();
+                const start = getZeroTime();
+                start.setTime(getZeroTime() - 3600 * 1000 * 24 * 7);
+                picker.$emit('pick', [start, end]);
             }
-          },{
+        },{
             text: '最近一个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
+                const end = getZeroTime();
+                const start = getZeroTime();
+                start.setDate(1)
+                picker.$emit('pick', [start, end]);
             }
-          }]
-        }
+        }]
+    }
 
     export default {
       name: 'table_demo',
@@ -392,7 +393,7 @@
               { name: 'appId', filterOptionsObj: appIdOptionsObj },
               { name: 'totalMoneyYuan' },
               { name: 'totalHandlingChargeYuan' },
-              { name: 'totalHandlingChargeYuan' },
+              { name: 'settlementMoneyYuan' },
               { name: 'orderTime', filterFunction: parseTime },
               { name: 'createTime', filterFunction: parseTime },
               { name: 'updateTime', filterFunction: parseTime }

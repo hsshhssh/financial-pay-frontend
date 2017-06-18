@@ -157,7 +157,6 @@
                         let data = response.data
                         for (let key in data) {
                             if (data[key].userId === userId || isAdminRole()) {
-                                data[key].userName = store.getters.name
                                 data[key].totalMoneyYuan = (data[key].totalMoney) / 100
                                 data[key].totalHandlingChargeYuan = (data[key].totalHandlingCharge) / 100
                                 data[key].settlementMoneyYuan = (data[key].settlementMoney) / 100
