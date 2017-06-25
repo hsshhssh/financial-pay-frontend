@@ -49,7 +49,7 @@
     <!-- 列表 -->
     <el-table  :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
 
-      <el-table-column align="center" label="商户名称" width="230">
+      <el-table-column align="center" label="商户名称" width="250">
         <template scope="scope">
           <span>{{scope.row.userName}}</span>
         </template>

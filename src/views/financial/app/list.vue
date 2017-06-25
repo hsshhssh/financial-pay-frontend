@@ -34,7 +34,7 @@
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="商户名称" width="100">
+            <el-table-column align="center" label="商户名称" width="250">
                 <template scope="scope">
                     <span>{{scope.row.userName}}</span>
                 </template>

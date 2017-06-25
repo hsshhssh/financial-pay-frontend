@@ -41,7 +41,7 @@
             </el-table-column>
 
 
-            <el-table-column align="center" label="用户名" width="100">
+            <el-table-column align="center" label="用户名" width="250">
                 <template scope="scope">
                     <span>{{scope.row.name}}</span>
                 </template>
