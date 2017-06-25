@@ -49,7 +49,7 @@
     <!-- 列表 -->
     <el-table  :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
 
-      <el-table-column align="center" label="商户名称" width="100">
+      <el-table-column align="center" label="商户名称" width="230">
         <template scope="scope">
           <span>{{scope.row.userName}}</span>
         </template>
@@ -74,7 +74,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="订单金额" width="65">
+      <el-table-column align="center" label="订单金额" width="100">
         <template scope="scope">
           <span>{{scope.row.moneyYuan}}</span>
         </template>
@@ -92,7 +92,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="回调商户状态" width="100">
+      <el-table-column align="center" label="回调商户状态" width="150">
         <template scope="scope">
           <span>{{scope.row.callbackStateStr}}</span>
         </template>
