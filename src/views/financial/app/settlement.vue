@@ -62,11 +62,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="手续费总金额" width="140">
-        <template scope="scope">
-          <span>{{scope.row.totalHandlingChargeYuan}}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column align="center" label="手续费总金额" width="140">-->
+        <!--<template scope="scope">-->
+          <!--<span>{{scope.row.totalHandlingChargeYuan}}</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
 
 
       <el-table-column align="center" label="应结总金额" width="140">
@@ -81,11 +81,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="修改时间">
-        <template scope="scope">
-          <span>{{scope.row.updateTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column width="180px" align="center" label="修改时间">-->
+        <!--<template scope="scope">-->
+          <!--<span>{{scope.row.updateTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
     </el-table>
 
     <!-- 分页信息 -->
@@ -171,7 +171,7 @@
           listQuery: {
             page: 1,
             limit: 10,
-            timeType: undefined,
+            timeType: 'createTime',
             search: {
               userId_eq: undefined,
               appId_eq: undefined
@@ -227,12 +227,12 @@
         appFilter(type) {
           return appIdOptionsObj[type]
         },
-        timeFilter(time) {
+        timeFilter(time, format) {
           if(time == 0) {
             return 0
           }
           else {
-            return parseTime(time, '{y}-{m}-{d} {h}:{i}')
+            return parseTime(time, format)
           }
         }
       },
@@ -389,17 +389,15 @@
               settlementList({}, 1, 1000, null).then(response => {
                   let list = response.data.list;
                   const { export_json_to_excel } = require('vendor/Export2Excel');
-                  const tHeader = ['序号', '商户名称', '应用名称', '订单总金额', '手续费总金额', '应结总金额', '订单时间','创建时间', '修改时间'];
+                  const tHeader = ['序号', '商户名称', '应用名称', '订单总金额', '应结总金额', '订单时间','创建时间'];
                   const filterVal = [
                       { name: 'id' },
                       { name: 'userName' },
                       { name: 'appId', filterOptionsObj: appIdOptionsObj },
                       { name: 'totalMoneyYuan' },
-                      { name: 'totalHandlingChargeYuan' },
                       { name: 'settlementMoneyYuan' },
                       { name: 'orderTime', filterFunction: parseTime },
-                      { name: 'createTime', filterFunction: parseTime },
-                      { name: 'updateTime', filterFunction: parseTime }
+                      { name: 'createTime', filterFunction: parseTime }
 
                   ];
                   const data = this.formatJson(filterVal, list);

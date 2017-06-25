@@ -64,13 +64,14 @@ const Introduction = resolve => require(['../views/introduction/index'], resolve
 
 /* 支付平台 */
 const PayOrder = resolve => require(['../views/financial/pay/order'], resolve);
-const Settlement = resolve => require(['../views/financial/pay/settlement'], resolve);
-const RealTimeData = resolve => require(['../views/financial/pay/realTimeData'], resolve);
-const MonthSettlement = resolve => require(['../views/financial/pay/monthSettlement'], resolve);
 const FailCallback = resolve => require(['../views/financial/pay/failCallback'], resolve);
+const UserSettlement = resolve => require(['../views/financial/pay/userSettlement'], resolve);
 
 /* 应用管理 */
 const AppList = resolve => require(['../views/financial/app/list'], resolve);
+const Settlement = resolve => require(['../views/financial/app/settlement'], resolve);
+const RealTimeData = resolve => require(['../views/financial/app/realTimeData'], resolve);
+const MonthSettlement = resolve => require(['../views/financial/app/monthSettlement'], resolve);
 
 /* 运营管理 */
 const UserList = resolve => require(['../views/financial/operation/user'], resolve);
@@ -230,10 +231,8 @@ export const asyncRouterMap = [
       icon: 'zonghe',
       children: [
                 { path: 'order', component: PayOrder, name: '支付订单' },
-                { path: 'settlement', component: Settlement, name: '结算记录' },
-                { path: 'realTimeData', component: RealTimeData, name: '当日实时记录' },
-                { path: 'monthSettlement', component: MonthSettlement, name: '每月结算记录' },
-                { path: 'failCallback', component: FailCallback, name: '回调失败记录' }
+                { path: 'failCallback', component: FailCallback, name: '回调失败记录' },
+                { path: 'userSettlement', component: UserSettlement, name: '结算记录' }
       ]
   },
   {
@@ -244,7 +243,10 @@ export const asyncRouterMap = [
       meta: { role: ['payUser', 'admin'] },
       icon: 'zujian',
       children: [
-        { path: 'list', component: AppList, name: '应用列表' }
+        { path: 'list', component: AppList, name: '应用列表' },
+          { path: 'settlement', component: Settlement, name: '应用结算记录' },
+          { path: 'realTimeData', component: RealTimeData, name: '当日实时记录' },
+          { path: 'monthSettlement', component: MonthSettlement, name: '每月结算记录' },
       ]
   },
     {

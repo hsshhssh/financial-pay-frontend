@@ -4,34 +4,18 @@
         <!-- 搜索区域 -->
         <div class="filter-container">
 
-            <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.userId_eq" placeholder="商户" v-if="isAdminRole">
-                <el-option v-for="item in userIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
-                </el-option>
-            </el-select>
-
-            <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.appId" placeholder="应用">
-                <el-option v-for="item in appIdOptions" :key="item.key" :label="item.display_name" :value="item.key">
-                </el-option>
-            </el-select>
-
-            <el-date-picker class="filter-item"
-                    v-model="month"
-                    type="month"
-                    placeholder="选择月">
-            </el-date-picker>
-
         </div>
 
         <!--按钮区域-->
         <div class="filter-container">
-            <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
+            <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">刷新</el-button>
         </div>
 
         <!-- 列表 -->
         <el-table  :key='tableKey' :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
             <el-table-column width="180px" align="center" label="订单时间">
                 <template scope="scope">
-                    <span>{{scope.row.orderTime | timeFilter('{y}-{m}')}}</span>
+                    <span>{{scope.row.createTime | timeFilter('{y}-{m}-{d}')}}</span>
                 </template>
             </el-table-column>
 
@@ -54,11 +38,11 @@
                 </template>
             </el-table-column>
 
-            <el-table-column align="center" label="手续费总金额" width="140">
-                <template scope="scope">
-                    <span>{{scope.row.totalHandlingChargeYuan}}</span>
-                </template>
-            </el-table-column>
+            <!--<el-table-column align="center" label="手续费总金额" width="140">-->
+                <!--<template scope="scope">-->
+                    <!--<span>{{scope.row.totalHandlingChargeYuan}}</span>-->
+                <!--</template>-->
+            <!--</el-table-column>-->
 
 
             <el-table-column align="center" label="应结总金额" width="140">
@@ -73,11 +57,11 @@
                 </template>
             </el-table-column>
 
-            <el-table-column width="180px" align="center" label="修改时间">
-                <template scope="scope">
-                    <span>{{scope.row.updateTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>
-                </template>
-            </el-table-column>
+            <!--<el-table-column width="180px" align="center" label="修改时间">-->
+                <!--<template scope="scope">-->
+                    <!--<span>{{scope.row.updateTime | timeFilter('{y}-{m}-{d} {h}:{i}')}}</span>-->
+                <!--</template>-->
+            <!--</el-table-column>-->
 
         </el-table>
 
@@ -108,9 +92,8 @@
     import store from 'store';
 
     import { Message } from 'element-ui';
-    import { appMonthSettlement } from 'api/financial/pay_settlement'
+    import { appSettlementList } from 'api/financial/pay_settlement'
     import { appListNoPage } from 'api/financial/pay_app'
-    import { userListNoPage } from 'api/financial/user'
     import { getUidWithUndefined, isAdminRole } from 'src/utils/permission.js'
 
     let appIdOptionsObj = {}
@@ -120,7 +103,6 @@
         data() {
             return {
                 userName: store.getters.name,
-                isAdminRole: isAdminRole(),
                 list: null,
                 total: null,
                 listLoading: true,
@@ -128,9 +110,7 @@
                     page: 1,
                     limit: 10,
                     search: {
-                        appId: undefined,
-                        month: undefined,
-                        userId: undefined
+                        userId_eq: store.getters.uid
                     }
                 },
                 tableKey: 0,
@@ -143,13 +123,10 @@
                 temp: {
 
                 },
-                appIdOptions: [],
-                userIdOptions: [],
-                month: new Date()
+                appIdOptions: []
             }
         },
         created() {
-            this.getUserList()
             this.getAppList()
             this.getList()
         },
@@ -171,26 +148,23 @@
             // 查询列表信息
             getList() {
                 this.listLoading = true;
-                let userId = 0
-                // 处理商户
-                if ( typeof(this.listQuery.search.userId_eq) === 'undefined' && this.listQuery.search.userId_eq !== 0) {
-                    userId = getUidWithUndefined()
-                } else {
-                    userId = this.listQuery.search.userId_eq
-                }
-                let appId = this.listQuery.search.appId
 
-                let month = 0
-                let year = 0;
-                if (this.month) {
-                    month = (this.month.getMonth() + 1)
-                    year = (this.month.getFullYear())
-                }
-                appMonthSettlement(userId, appId, month, year).then(response => {
+                appSettlementList(0).then(response => {
 
                     if (response.status === 200) {
-
-                        this.list = response.data
+                        let userId = store.getters.uid
+                        let list = []
+                        let data = response.data
+                        for (let key in data) {
+                            if (data[key].userId === userId || isAdminRole()) {
+                                data[key].totalMoneyYuan = (data[key].totalMoney) / 100
+                                data[key].totalHandlingChargeYuan = (data[key].totalHandlingCharge) / 100
+                                data[key].settlementMoneyYuan = (data[key].settlementMoney) / 100
+                                list.push(data[key])
+                            }
+                        }
+                        this.list = list
+                        this.total = list.length
 
                         this.listLoading = false;
                     }
@@ -306,7 +280,6 @@
             getAppList() {
                 appListNoPage(getUidWithUndefined()).then(response => {
                     let data = response.data;
-                    this.appIdOptions.push({ key: null, display_name: '全部' })
                     for (let i = 0; i < data.length; i++) {
                         this.appIdOptions.push({ key: data[i].id, display_name: data[i].appName });
                     }
@@ -315,17 +288,7 @@
                         return acc
                     }, {});
                 })
-            },
-            getUserList() {
-                userListNoPage().then(response => {
-                    if (response.status === 200) {
-                        this.userIdOptions.push({ key: null, display_name: '全部' })
-                        response.data.list.forEach(u => {
-                            this.userIdOptions.push({ key: u.id, display_name: u.name })
-                        })
-                    }
-                })
-            },
+            }
         }
     }
 </script>
