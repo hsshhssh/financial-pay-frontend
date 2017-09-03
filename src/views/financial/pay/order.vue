@@ -3,10 +3,13 @@
 
     <!-- 搜索区域 -->
     <div class="filter-container">
-      <el-input @keyup.enter.native="handleFilter" style="width: 250px;" class="filter-item" placeholder="新企航订单号" v-model="listQuery.search.orderNo_eq">
+      <el-input @keyup.enter.native="handleFilter" style="width: 220px;" class="filter-item" placeholder="新企航订单号" v-model="listQuery.search.orderNo_eq">
       </el-input>
 
-      <el-input @keyup.enter.native="handleFilter" style="width: 250px;" class="filter-item" placeholder="商户订单号" v-model="listQuery.search.userOrderNo_eq">
+      <el-input @keyup.enter.native="handleFilter" style="width: 220px;" class="filter-item" placeholder="商户订单号" v-model="listQuery.search.userOrderNo_eq">
+      </el-input>
+
+      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="订单后缀" v-model="listQuery.search.orderSerialSuffix_eq">
       </el-input>
 
       <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.search.userId_eq" placeholder="商户" v-if="isAdminRole">
