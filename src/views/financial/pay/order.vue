@@ -157,7 +157,8 @@
     const payTypeOptions = [
       { key: null, display_name: '全部' },
       { key: 1, display_name: '微信wap支付' },
-      { key: 2, display_name: '支付宝wap支付' }
+      { key: 2, display_name: '支付宝wap支付' },
+      { key: 3, display_name: '微信公众号支付' },
     ]
 
     const callbackStateOptions = [
@@ -429,7 +430,7 @@
         },
         handleDownload() {
           require.ensure([], () => {
-              orderList({} , 1, 1000).then(response => {
+              orderList({ "userId_eq": getUidWithUndefined()} , 1, 1000).then(response => {
                   let list = response.data.list;
                   const { export_json_to_excel } = require('vendor/Export2Excel');
                   const tHeader = ['序号', '商户名称', '应用名称', '新企航订单号', '商户订单号', '订单金额', '支付方式', '回调商户状态',  '回调成功时间', '回调商户状态'];

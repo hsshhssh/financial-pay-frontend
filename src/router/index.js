@@ -75,6 +75,7 @@ const MonthSettlement = resolve => require(['../views/financial/app/monthSettlem
 
 /* 运营管理 */
 const UserList = resolve => require(['../views/financial/operation/user'], resolve);
+const PlatformSettlementList = resolve => require(['../views/financial/operation/platformSettlement'], resolve);
 
 
 Vue.use(Router);
@@ -259,7 +260,8 @@ export const asyncRouterMap = [
         children: [
             { path: 'user', component: UserList, name: '用户' },
             { path: 'payPlatform', component: Err404, name: '支付平台管理' },
-            { path: 'role', component: Err404, name: '角色管理' }
+            { path: 'role', component: Err404, name: '角色管理' },
+            { path: 'platformSettlement', component: PlatformSettlementList, name: '支付行结算' },
         ]
     },
   { path: '*', redirect: '/404', hidden: true }
