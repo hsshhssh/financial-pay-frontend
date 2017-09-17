@@ -386,7 +386,7 @@
         handleDownload() {
           require.ensure([], () => {
 
-              settlementList({}, 1, 1000, null).then(response => {
+              settlementList({ "userId_eq": getUidWithUndefined()}, 1, 1000, null).then(response => {
                   let list = response.data.list;
                   const { export_json_to_excel } = require('vendor/Export2Excel');
                   const tHeader = ['序号', '商户名称', '应用名称', '订单总金额', '应结总金额', '订单时间','创建时间'];
