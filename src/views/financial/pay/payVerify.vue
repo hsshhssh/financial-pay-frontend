@@ -399,18 +399,21 @@
             handleDownload() {
                 require.ensure([], () => {
                     const { export_json_to_excel } = require('vendor/Export2Excel');
-                    const tHeader = ['应用ID', '商户名称', '应用名称', '回调地址', '返回地址', '秘钥', '创建时间'];
+                    const tHeader = ['对账时间', '商户名称', '结算金额', '转账金额1', '转账金额2', '转账金额3', '转账金额4', '转账金额5', '转账金额6', '差额'];
                     const filterVal = [
-                        { name: 'id' },
+                        { name: 'verifyTime', filterFunction: parseTime },
                         { name: 'userName' },
-                        { name: 'appName' },
-                        { name: 'callbackUrl' },
-                        { name: 'nodifyUrl' },
-                        { name: 'secretkey' },
-                        { name: 'createTime', filterFunction: parseTime }
+                        { name: 'settlementMoneyYuan' },
+                        { name: 'transfer1Yuan' },
+                        { name: 'transfer2Yuan' },
+                        { name: 'transfer3Yuan' },
+                        { name: 'transfer4Yuan' },
+                        { name: 'transfer5Yuan' },
+                        { name: 'transfer6Yuan' },
+                        { name: 'diffYuan' }
                     ];
                     const data = this.formatJson(filterVal, this.list);
-                    export_json_to_excel(tHeader, data, '应用数据');
+                    export_json_to_excel(tHeader, data, '提现数据');
                 })
             },
             formatJson(filterVal, jsonData) {
