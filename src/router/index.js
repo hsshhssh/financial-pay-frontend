@@ -66,6 +66,7 @@ const Introduction = resolve => require(['../views/introduction/index'], resolve
 const PayOrder = resolve => require(['../views/financial/pay/order'], resolve);
 const FailCallback = resolve => require(['../views/financial/pay/failCallback'], resolve);
 const UserSettlement = resolve => require(['../views/financial/pay/userSettlement'], resolve);
+const PayVerify = resolve => require(['../views/financial/pay/payVerify'], resolve);
 
 /* 应用管理 */
 const AppList = resolve => require(['../views/financial/app/list'], resolve);
@@ -233,7 +234,8 @@ export const asyncRouterMap = [
       children: [
                 { path: 'order', component: PayOrder, name: '支付订单' },
                 { path: 'failCallback', component: FailCallback, name: '回调失败记录' },
-                { path: 'userSettlement', component: UserSettlement, name: '结算记录' }
+                { path: 'userSettlement', component: UserSettlement, name: '结算记录' },
+                { path: 'payVerify', component: PayVerify, name: '提现记录' }
       ]
   },
   {

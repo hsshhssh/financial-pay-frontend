@@ -71,11 +71,11 @@
                 </template>
             </el-table-column>
 
-            <el-table-column  align="center" label="操作" width="150">
+            <el-table-column  align="center" label="操作" width="200">
                 <template scope="scope">
                     <el-button size="small" type="success" @click="handleUpdate(scope.row)">编辑
                     </el-button>
-                    <el-button size="small" type="primary" @click="handleAssignRole(scope.row)">角色
+                    <el-button size="small" type="primary" @click="handleSwitch(scope.row)">一键切换
                     </el-button>
                 </template>
             </el-table-column>
@@ -127,6 +127,33 @@
             </div>
         </el-dialog>
 
+        <el-dialog :title="textMapPayPlatform" :visible.sync="dialogFormVisiblePayPlatform">
+            <el-form class="small-space" :model="tempPayPlatform" :rules="tempRulesPayPlatform" ref="tempFormPayPlatform" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="tempPayPlatform.username" :disabled="true"></el-input>
+                </el-form-item>
+
+                <el-form-item label="支付方式" prop="payType">
+                    <el-select clearable class="filter-item" style="width: 130px" v-model="tempPayPlatform.payType" placeholder="支付方式" @change="payTypeChange">
+                        <el-option v-for="item in payTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="支付平台" prop="platformId">
+                    <el-select clearable class="filter-item" style="width: 130px" v-model="tempPayPlatform.platformId" placeholder="支付平台">
+                        <el-option v-for="item in this.platformList" :key="item.id" :label="item.platformName" :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisiblePayPlatform = false">取 消</el-button>
+                <el-button type="primary" @click="switchPayplaform">确 定</el-button>
+            </div>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -138,11 +165,19 @@
 
     import { Message } from 'element-ui';
     import { userList, userCreate, userUpdate } from 'api/financial/user'
+    import { platformList } from 'api/financial/pay_platform'
+    import { switchPayPlatform } from 'api/financial/pay_app_platform'
 
 
     // 用户类型
     const roleOptions = [
         { key: 1, display_name: '商户' }
+    ]
+
+    // 支付方式
+    const payTypeOptions = [
+        { key: 1, display_name: '微信支付' },
+        { key: 2, display_name: '支付宝支付' },
     ]
 
 
@@ -201,11 +236,23 @@
                         { required: true, trigger: 'blur', message: '用户类型必填', type: 'number' }
                     ]
                 },
-                roleOptions
+
+                textMapPayPlatform: "一键切换",
+                dialogFormVisiblePayPlatform: false,
+                tempPayPlatform:{
+                    payType: undefined,
+                    platformId: undefined
+                },
+                tempRulesPayPlatform:{},
+                platformListFull:[],
+                platformList:[],
+                roleOptions,
+                payTypeOptions
             }
         },
         created() {
             this.getList();
+            this.getPlatformList();
         },
         filters: {
             timeFilter(time) {
@@ -347,10 +394,41 @@
                 return data;
             },
 
-            // 分配角色
-            handleAssignRole(row) {
-
+            // 一键切换
+            getPlatformList() {
+                platformList({}, 1, 100).then(response => {
+                    this.platformListFull = response.data.list
+                })
+            },
+            handleSwitch(row) {
+                this.tempPayPlatform.username = row.name
+                this.tempPayPlatform.userId = row.id
+                this.tempPayPlatform.payType = undefined
+                this.tempPayPlatform.platformId = undefined
+                this.dialogFormVisiblePayPlatform = true;
+            },
+            switchPayplaform() {
+                switchPayPlatform(this.tempPayPlatform).then(response => {
+                    if (response.data > 0) {
+                        Message({
+                            message: '操作成功',
+                            type: 'success',
+                            duration: 2000
+                        });
+                        this.dialogFormVisiblePayPlatform = false;
+                    } else {
+                        Message({
+                            message: '操作失败',
+                            type: 'warning',
+                            duration: 2000
+                        });
+                    }
+                })
+            },
+            payTypeChange(payType) {
+                this.platformList = this.platformListFull.filter(p => p.payType == payType);
             }
+
         }
     }
 </script>
