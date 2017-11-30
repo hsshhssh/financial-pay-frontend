@@ -46,7 +46,7 @@
 
     <div class="filter-container">
       <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
-      <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
+      <el-button class="filter-item" type="primary" icon="document" @click="handleSelectDate">导出</el-button>
     </div>
 
     <!-- 列表 -->
@@ -138,6 +138,22 @@
         :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
+
+    <el-dialog :title="selectDateTitle" :visible.sync="dialogFormVisible">
+      <el-form class="small-space" :model="temp"  ref="tempForm" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+
+        <el-form-item label="日期">
+          <el-date-picker v-model="temp.orderDate" type="date" placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleDownload">确 定</el-button>
+      </div>
+    </el-dialog>
+
 
   </div>
 </template>
@@ -232,13 +248,7 @@
             }
           },
           temp: {
-            id: undefined,
-            importance: 0,
-            remark: '',
-            timestamp: 0,
-            title: '',
-            type: '',
-            status: 'published'
+              orderDate: '',
           },
           importanceOptions: [1, 2, 3],
           payTypeOptions,
@@ -259,7 +269,8 @@
           dialogPvVisible: false,
           pvData: [],
           showAuditor: false,
-          tableKey: 0
+          tableKey: 0,
+          selectDateTitle: '导出订单时间选择'
         }
       },
       created() {
@@ -428,12 +439,22 @@
             this.dialogPvVisible = true
           })
         },
+        handleSelectDate() {
+            this.dialogFormVisible = true;
+        },
         handleDownload() {
+          var beginTime = Date.parse(this.temp.orderDate)/1000;
+          var endTime = beginTime + 3600 * 24;
+          var exportSearch = {
+              "userId_eq": getUidWithUndefined(),
+              "createTime_gte": beginTime,
+              "createTime_lt": endTime
+          }
           require.ensure([], () => {
-              orderList({ "userId_eq": getUidWithUndefined()} , 1, 1000).then(response => {
+              orderList(exportSearch , 1, 20000).then(response => {
                   let list = response.data.list;
                   const { export_json_to_excel } = require('vendor/Export2Excel');
-                  const tHeader = ['序号', '商户名称', '应用名称', '新企航订单号', '商户订单号', '订单金额', '支付方式', '回调商户状态',  '回调成功时间', '回调商户状态'];
+                  const tHeader = ['序号', '商户名称', '应用名称', '新企航订单号', '商户订单号', '订单金额', '支付方式', '回调商户状态',  '回调成功时间', '创建时间'];
                   const filterVal = [
                       { name: 'id' },
                       { name: 'userName' },
@@ -444,10 +465,11 @@
                       { name: 'payTypeStr'},
                       { name: 'callbackStateStr' },
                       { name: 'callbackSuccessTime', filterFunction: parseTime },
-                      { name: 'callbackFailTime', filterFunction: parseTime }
+                      { name: 'createTime', filterFunction: parseTime }
                   ];
                   const data = this.formatJson(filterVal, list);
                   export_json_to_excel(tHeader, data, '订单数据');
+                  this.dialogFormVisible = false
               })
           })
         },
