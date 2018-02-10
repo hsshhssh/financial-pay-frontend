@@ -33,3 +33,10 @@ export function updatePayVerify(body) {
         data: bodyCopy
     })
 }
+
+export function refreshTotalDiffMoney() {
+    return fetch({
+        url: '/xqh/financial/pay/verify/refresh/diffMap',
+        method: 'get'
+    })
+}

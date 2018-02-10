@@ -19,7 +19,7 @@
         <div class="filter-container">
             <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
             <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
-            <!--<el-button class="filter-item" type="primary" icon="plus" @click="handleCreate">添加</el-button>-->
+            <el-button class="filter-item" @click="handleRefreshTotalDiffMoney">总差额: {{totalDiffMoney}} (点击刷新)</el-button>
         </div>
 
         <!-- 列表 -->
@@ -160,7 +160,7 @@
     import { userListNoPage } from 'api/financial/user'
     import { getUidWithUndefined, isAdminRole } from 'src/utils/permission.js'
 
-    import { payVerifyList, updatePayVerify } from 'api/financial/pay_verify'
+    import { payVerifyList, updatePayVerify, refreshTotalDiffMoney } from 'api/financial/pay_verify'
 
     const pickerOptions2 = {
         shortcuts: [{
@@ -202,6 +202,7 @@
         name: 'table_demo',
         data() {
             return {
+                totalDiffMoney: 0,
                 userName: store.getters.name,
                 isAdminRole: isAdminRole(),
                 list: null,
@@ -292,6 +293,7 @@
                     this.list.push({id:0})
                     this.list.push(totalDiff)
 
+                    this.totalDiffMoney = response.data.totalDiff;
                 })
 
             },
@@ -388,6 +390,26 @@
                     } else {
                         Message({
                             message: '创建失败',
+                            type: 'warning',
+                            duration: 2000
+                        });
+                    }
+                })
+            },
+
+            // 刷新总差额
+            handleRefreshTotalDiffMoney() {
+                refreshTotalDiffMoney().then(response => {
+                    if(response.status == 200) {
+                        Message({
+                            message: '刷新成功',
+                            type: 'success',
+                            duration: 1000
+                        });
+                        this.getList();
+                    } else {
+                        Message({
+                            message: '刷新失败',
                             type: 'warning',
                             duration: 2000
                         });
