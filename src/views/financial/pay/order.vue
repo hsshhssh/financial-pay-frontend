@@ -9,6 +9,9 @@
       <el-input @keyup.enter.native="handleFilter" style="width: 220px;" class="filter-item" placeholder="商户订单号" v-model="listQuery.search.userOrderNo_eq">
       </el-input>
 
+      <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="订单流水号" v-model="listQuery.search.orderSerial_eq" v-if="isAdminRole">
+      </el-input>
+
       <el-input @keyup.enter.native="handleFilter" style="width: 100px;" class="filter-item" placeholder="订单后缀" v-model="listQuery.search.orderSerialSuffix_eq">
       </el-input>
 
